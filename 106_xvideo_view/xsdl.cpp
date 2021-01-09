@@ -172,3 +172,45 @@ bool XSDL::Draw(const unsigned char * data, int linesize)
 
 	return true;
 }
+
+bool XSDL::Draw(const unsigned char * y, int y_pitch, const unsigned char * u, int u_pitch, const unsigned char * v, int v_pitch)
+{
+	// 参数检查
+	if (!y || !u || !v) return false;
+	unique_lock<mutex> sdl_lock(mtx_);
+	if (!texture_ || !render_ || !win_ || width_ <= 0 || height_ <= 0) {
+		return false;
+	}
+
+	// 复制内存到显存
+	auto re = SDL_UpdateYUVTexture(texture_,
+		NULL,
+		y, y_pitch,
+		u, u_pitch,
+		v, v_pitch);
+	if (re != 0) {
+		cout << SDL_GetError() << endl;
+		return false;
+	}
+
+	// 清空屏幕
+	SDL_RenderClear(render_);
+	// 材质复制到渲染器
+	SDL_Rect rect;
+	SDL_Rect *prect = nullptr;
+	if (scale_w_ > 0) {
+		rect.x = 0, rect.y = 0;
+		rect.w = scale_w_; //渲染的宽高, 可缩放
+		rect.h = scale_h_;
+		prect = &rect;
+	}
+
+	re = SDL_RenderCopy(render_, texture_, NULL, prect);
+	if (re != 0) {
+		cout << SDL_GetError() << endl;
+		return false;
+	}
+	SDL_RenderPresent(render_);
+
+	return true;
+}

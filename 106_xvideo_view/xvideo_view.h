@@ -5,6 +5,7 @@
 // 隐藏SDL实现
 // 渲染方案可替代
 // 线程安全
+struct AVFrame;
 class XVideoView
 {
 public:
@@ -39,6 +40,10 @@ public:
 	/// linesize <= 0 就根据宽度和像素格式自动算出大小
 	/// @return 渲染是否成功
 	virtual  bool Draw(const unsigned char* data, int linesize = 0) = 0;
+	virtual  bool Draw(
+		const unsigned char* y, int y_pitch,
+		const unsigned char* u, int u_pitch,
+		const unsigned char* v, int v_pitch) = 0;
 
 	// 显示缩放
 	void Scale(int w, int h)
@@ -46,6 +51,7 @@ public:
 		scale_w_ = w;
 		scale_h_ = h;
 	}
+	bool DrawFrame(AVFrame* frame);
 protected:
 	int width_ = 0;		// 材质宽高
 	int height_ = 0;

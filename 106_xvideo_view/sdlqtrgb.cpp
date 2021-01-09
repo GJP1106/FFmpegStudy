@@ -4,20 +4,21 @@
 #include <iostream>
 #include <fstream>
 #include "xvideo_view.h"
+extern "C"
+{
+#include <libavcodec/avcodec.h>
+}
 using namespace std;
 
-#pragma comment(lib, "SDL2.lib")
-//static SDL_Window* sdl_win = NULL;
-//static SDL_Renderer* sdl_render = NULL;
-//static SDL_Texture* sdl_textture = NULL;
+// #pragma comment(lib, "SDL2.lib")
+// #pragma comment(lib, "avutil.lib")
+
 static int sdl_width = 0;
 static int sdl_height = 0;
-static unsigned char *yuv = NULL;
-static unsigned char *yuv_1 = NULL;
 static int pix_size = 2;
 static ifstream yuv_file;
 static XVideoView* view = nullptr;
-
+static AVFrame *frame = nullptr;
 sdlqtrgb::sdlqtrgb(QWidget *parent)
 	: QWidget(parent)
 {
@@ -36,71 +37,50 @@ sdlqtrgb::sdlqtrgb(QWidget *parent)
 	view->Close();
 	view->Init(sdl_width, sdl_height, XVideoView::YUV420P, (void*)ui.label->winId());
 
-	yuv = new unsigned char[sdl_width * sdl_height * 4];
-	yuv_1 = new unsigned char[sdl_width * sdl_height * 4];
+	//生成frame对象空间
+	frame = av_frame_alloc();
+	frame->width = sdl_width;
+	frame->height = sdl_height;
+	frame->format = AV_PIX_FMT_YUV420P;
+	///////////////////////
+	//  Y  Y
+	//   UV
+	//  Y  Y
+	frame->linesize[0] = sdl_width;  // Y
+	frame->linesize[1] = sdl_width / 2;  // U
+	frame->linesize[2] = sdl_width / 2;  // V
+
+	// 生成图像空间， 默认32字节对齐
+	auto re = av_frame_get_buffer(frame, 0);
+	if (re != 0) {
+		char buf[1024] = { 0 };
+		av_strerror(re, buf, sizeof(buf));
+		cout << buf << endl;
+	}
+
+
 	startTimer(10);
 }
 
 void sdlqtrgb::timerEvent(QTimerEvent * ev)
 {
+	// yuv420p
+	// 4 * 2
+	// yyyy yyyy
+	// u    u
+	// v    v
+	yuv_file.read((char *)frame->data[0], sdl_width * sdl_height); // Y
+	yuv_file.read((char *)frame->data[1], sdl_width * sdl_height / 4); // U
+	yuv_file.read((char *)frame->data[2], sdl_width * sdl_height / 4); // V
 	if (view->IsExit()) {
 		view->Close();
 		exit(0);
 	}
 	// yuv平面存储
 	// yyyy yyyy uu vv
-	yuv_file.read((char *)yuv, sdl_width * sdl_height * 1.5);
 	//yuv_file.read((char *)yuv, sdl_width * sdl_height * 1.5);
-	//QMessageBox::information(this, "", "open yuv failed!");
-	int offset = 0;
-	int i, j;
-	for (i = 0; i < 500; i++) {
-		//yuv += (i * 4) + 300;
-		memcpy(yuv_1 + (i * 400), yuv + (i * 400), 400 * sizeof(unsigned char));
-		/*for (j = 0; j < sdl_width; j++) {
-			yuv_1[i * sdl_width + j] = yuv[i * sdl_width + j];
-		}*/
-	}
-	offset = 400 * 500;
-	/*for (j = 0; j < 150; j++) {
-		memcpy(yuv_1 + offset + (j * 400), yuv + offset + (j * 400), 400 * sizeof(unsigned char));
-	}
-	offset += j * sdl_width;*/
-	for (i = 0; i < 500; i++) {
-		//yuv += (i * 4) + 300;
-		memcpy(yuv_1 + offset + (i * 400), yuv + (i * 400), 400 * sizeof(unsigned char));
-		/*for (j = 0; j < sdl_width; j++) {
-			yuv_1[i * sdl_width + j + offset] = yuv[i * sdl_width + j];
-		}*/
-	}
-
-	offset += 400 * i;
-	/*for (j = 0; j < 150; j++) {
-		memcpy(yuv_1 + offset + (j * 400), yuv + offset + (j * 400), 400 * sizeof(unsigned char));
-	}
-	offset += j * sdl_width;*/
-	for (i = 0; i < 300; i++) {
-		//yuv += (i * 4) + 300;
-		//memcpy(yuv_1 + (i * 400), yuv + (i * 400), 400 * sizeof(unsigned char));
-		for (j = 0; j < sdl_width; j++) {
-			//yuv_1[i * sdl_width + j + offset] = yuv[i * sdl_width + j];
-		}
-	}
-
-	offset += 400 * i;
-	/*for (j = 0; j < 150; j++) {
-		memcpy(yuv_1 + offset + (j * 400), yuv + offset + (j * 400), 400 * sizeof(unsigned char));
-	}
-	offset += j * sdl_width;*/
-	for (i = 0; i < 300; i++) {
-		//yuv += (i * 4) + 300;
-		//memcpy(yuv_1 + (i * 400), yuv + (i * 400), 400 * sizeof(unsigned char));
-		for (j = 0; j < sdl_width; j++) {
-			//yuv_1[i * sdl_width + j + offset] = yuv[i * sdl_width + j];
-		}
-	}
-
-	view->Draw(yuv_1);
+	view->DrawFrame(frame);
+	//view->Draw(yuv_1);
 }
 
 void sdlqtrgb::resizeEvent(QResizeEvent * ev)

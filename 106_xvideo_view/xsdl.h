@@ -22,6 +22,10 @@ public:
     /// linesize <= 0 就根据宽度和像素格式自动算出大小
     /// @return 渲染是否成功
     bool Draw(const unsigned char* data, int linesize = 0) override;
+	virtual  bool Draw(
+		const unsigned char* y, int y_pitch,
+		const unsigned char* u, int u_pitch,
+		const unsigned char* v, int v_pitch) override;
 private:
 	SDL_Window *win_ = nullptr;
 	SDL_Renderer *render_ = nullptr;

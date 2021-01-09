@@ -67,7 +67,7 @@
       <AdditionalIncludeDirectories>..\..\include;E:\Qt5.14.2\5.14.2\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\lib\x86</AdditionalLibraryDirectories>

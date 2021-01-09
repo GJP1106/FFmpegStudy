@@ -1,11 +1,14 @@
 #ifndef XVIDEO_VIEW_H
 #define XVIDEO_VIDW_H
 #include <mutex>
+#include <thread>
+#include <iostream>
 // 视频渲染接口类
 // 隐藏SDL实现
 // 渲染方案可替代
 // 线程安全
 struct AVFrame;
+void MSleep(unsigned int ms);
 class XVideoView
 {
 public:
@@ -52,13 +55,17 @@ public:
 		scale_h_ = h;
 	}
 	bool DrawFrame(AVFrame* frame);
+	int render_fps() { return render_fps_; } //显示帧率
 protected:
-	int width_ = 0;		// 材质宽高
+	int render_fps_ = 0;	//显示帧率
+	int width_ = 0;			// 材质宽高
 	int height_ = 0;
-	Format fmt_ = RGBA;	//像素格式
-	std::mutex mtx_;	//确保线程安全
-	int scale_w_ = 0;	//显示大小
+	Format fmt_ = RGBA;		//像素格式
+	std::mutex mtx_;		//确保线程安全
+	int scale_w_ = 0;		//显示大小
 	int scale_h_ = 0;
+	long long beg_ms = 0;	//计时开始时间
+	int count_ = 0;			//统计显示次数
 };
 
 #endif

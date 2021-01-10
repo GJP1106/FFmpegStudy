@@ -5,6 +5,7 @@
 #include <fstream>
 #include <thread>
 #include <sstream>
+#include <QSpinBOX>
 #include "xvideo_view.h"
 extern "C"
 {
@@ -22,7 +23,9 @@ static ifstream yuv_file;
 static XVideoView* view = nullptr;
 static AVFrame *frame = nullptr;
 static long long file_size = 0;
-static QLabel * view_fps = nullptr;
+static QLabel * view_fps = nullptr;  //显示fps控件
+static QSpinBox* set_fps = nullptr;  //设置fps控件
+int fps = 25;   // 播放帧率
 sdlqtrgb::sdlqtrgb(QWidget *parent)
 	: QWidget(parent)
 {
@@ -43,6 +46,12 @@ sdlqtrgb::sdlqtrgb(QWidget *parent)
 	// 显示fps的控件
 	view_fps = new QLabel(this);
 	view_fps->setText("100fps");
+
+	//设置fps
+	set_fps = new QSpinBox(this);
+	set_fps->move(200, 0);
+	set_fps->setValue(25);
+	set_fps->setRange(1, 300);
 
 	sdl_width = 400; //ui.label->width();
 	sdl_height = 300; // ui.label->height();
@@ -120,7 +129,12 @@ void sdlqtrgb::Main()
 	while (!is_exit) {
 		ViewS();
 		//this_thread::sleep_for(40ms);
-		MSleep(10);
+		if (fps > 0) {
+			MSleep(1000 / fps);
+		}
+		else {
+			MSleep(10);
+		}
 	}
 }
 void sdlqtrgb::View()
@@ -144,4 +158,5 @@ void sdlqtrgb::View()
 	ss << "fps:" << view->render_fps();
 	// 只能在槽函数中调用
 	view_fps->setText(ss.str().c_str());
+	fps = set_fps->value(); // 拿到播放帧率
 }

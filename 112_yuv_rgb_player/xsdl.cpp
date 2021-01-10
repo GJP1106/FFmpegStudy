@@ -48,7 +48,7 @@ bool XSDL::IsExit()
 
 }
 
-bool XSDL::Init(int w, int h, Format fmt, void * win_id)
+bool XSDL::Init(int w, int h, Format fmt)
 {
 	if (w <= 0 || h <= 0) {
 		return false;
@@ -68,7 +68,7 @@ bool XSDL::Init(int w, int h, Format fmt, void * win_id)
 		SDL_DestroyRenderer(render_);
 	}
 	if (!win_) {
-		if (!win_id) {
+		if (!win_id_) {
 			// 新建窗口
 			win_ = SDL_CreateWindow("XSDL",
 				SDL_WINDOWPOS_UNDEFINED,
@@ -77,7 +77,7 @@ bool XSDL::Init(int w, int h, Format fmt, void * win_id)
 		}
 		else {
 			// 渲染到控件
-			win_ = SDL_CreateWindowFrom(win_id);
+			win_ = SDL_CreateWindowFrom(win_id_);
 		}
 	}
 	if (!win_) {

@@ -12,9 +12,8 @@ public:
 	/// @param w 窗口宽度
 	/// @param h 窗口高度
 	/// @param fmt 绘制的像素格式
-	/// @param win_id 窗口句柄， 如果为空，创建新窗口
 	/// @param 是否创建成功
-	bool Init(int w, int h, Format fmt = RGBA, void *win_id = nullptr) override;
+	bool Init(int w, int h, Format fmt = RGBA) override;
 	////////////////////////////////
 	/// 渲染图像 线程安全
 	/// @param data 渲染的二进制数据

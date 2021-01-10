@@ -3,6 +3,7 @@
 #include <mutex>
 #include <thread>
 #include <iostream>
+#include <fstream>
 // 视频渲染接口类
 // 隐藏SDL实现
 // 渲染方案可替代
@@ -16,7 +17,8 @@ public:
 	{
 		RGBA,
 		ARGB,
-		YUV420P
+		YUV420P,
+		BGRA
 	};
 	enum RenderType
 	{
@@ -27,9 +29,8 @@ public:
 	/// @param w 窗口宽度
 	/// @param h 窗口高度
 	/// @param fmt 绘制的像素格式
-	/// @param win_id 窗口句柄， 如果为空，创建新窗口
 	/// @param 是否创建成功
-	virtual bool Init(int w, int h, Format fmt = RGBA, void *win_id = nullptr) = 0;
+	virtual bool Init(int w, int h, Format fmt = RGBA) = 0;
 
 	// 清理所有申请的资源，包括关闭窗口
 	virtual void Close() = 0;
@@ -56,7 +57,12 @@ public:
 	}
 	bool DrawFrame(AVFrame* frame);
 	int render_fps() { return render_fps_; } //显示帧率
+
+	// 打开文件
+	bool Open(std::string filepath);
+	void set_win_id(void *win) { win_id_ = win; }
 protected:
+	void *win_id_ = nullptr;  //窗口句柄
 	int render_fps_ = 0;	//显示帧率
 	int width_ = 0;			// 材质宽高
 	int height_ = 0;
@@ -66,6 +72,8 @@ protected:
 	int scale_h_ = 0;
 	long long beg_ms = 0;	//计时开始时间
 	int count_ = 0;			//统计显示次数
+private:
+	std::ifstream ifs_;
 };
 
 #endif

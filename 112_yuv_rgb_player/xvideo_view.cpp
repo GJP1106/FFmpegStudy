@@ -59,3 +59,13 @@ bool XVideoView::DrawFrame(AVFrame * frame)
 	}
 	return true;
 }
+
+bool XVideoView::Open(std::string filepath)
+{
+	if (ifs_.is_open()) {
+		ifs_.close();
+	}
+	ifs_.open(filepath, ios::binary);
+
+	return ifs_.is_open();
+}

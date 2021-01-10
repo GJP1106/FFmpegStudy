@@ -40,7 +40,7 @@ void yuvRgbPlayer::Main()
 	while (!is_exit)
 	{
 		ViewS();
-		MSleep(1);
+		MSleep(10);
 	}
 }
 

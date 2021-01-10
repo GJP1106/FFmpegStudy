@@ -13,12 +13,12 @@ void MSleep(unsigned int ms);
 class XVideoView
 {
 public:
-	enum Format
+	enum Format //枚举的值和ffmpeg中一致
 	{
-		RGBA,
-		ARGB,
 		YUV420P,
-		BGRA
+		ARGB = 25,
+		RGBA = 26,
+		BGRA = 28
 	};
 	enum RenderType
 	{
@@ -60,6 +60,9 @@ public:
 
 	// 打开文件
 	bool Open(std::string filepath);
+	// 读取一帧数据，并维护AVFrame空间
+	// 每次调用会覆盖上一次数据
+	AVFrame* Read();
 	void set_win_id(void *win) { win_id_ = win; }
 protected:
 	void *win_id_ = nullptr;  //窗口句柄
@@ -74,6 +77,7 @@ protected:
 	int count_ = 0;			//统计显示次数
 private:
 	std::ifstream ifs_;
+	AVFrame *frame_ = nullptr;
 };
 
 #endif

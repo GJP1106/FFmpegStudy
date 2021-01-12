@@ -96,6 +96,9 @@ void Encode(int index, char *str)
 	av_opt_set_int(c->priv_data, "crf", 23, 0);
 	c->rc_max_rate = br;
 	c->rc_buffer_size = br * 2;
+
+	//图像组 一组包含一个IDR SPS PPS 其他是P帧或者B帧
+	c->gop_size = 6;
 	/// 4.打开编码器上下文
 	int re = avcodec_open2(c, codec, NULL);
 	if (re != 0) {
@@ -154,7 +157,31 @@ void Encode(int index, char *str)
 				cerr << "avcodec_receive_packet faild!" << buf << endl;
 				break;
 			}
-			cout << packet->size << " " << flush;
+			//cout << packet->size << " " << flush;
+
+			/// 分析NALU
+			/// 一个AVPacket中包含多个NALU 以0001间隔，多个是以001间隔
+			/// 0001[NALU HEAD]
+			/// [NALU HEAD]
+			/// 1字节 orbidden bit(1bit), nal_reference_bit(2bits)(优先级)
+			/// nal_unit_type(5bits)
+			/// 1:非IDR图像中不采用数据划分的片段
+			/// 5：IDR图像的片段
+			/// 6：补充增强信息（SEI）
+			/// 7：序列参数集/SPS
+			/// 8：图像参数集/PPS
+			int nal_unit_type = 0;
+			unsigned char nal_head = *(packet->data + 4);  // +4去掉开头的0001
+			nal_unit_type = nal_head & 0x1f;  // 取后五位0001 1111
+			cout << "nal type:" << nal_unit_type << " " << flush;
+			for (int i = 4; i < packet->size - 4; i++) {
+				if (packet->data[i] == 0 &&
+					packet->data[i + 1] == 0 &&
+					packet->data[i + 2] == 1) {
+					nal_unit_type = packet->data[i + 3] & 0x1f;
+					cout << "(" << nal_unit_type << ")" << flush;
+				}
+			}
 			ofs.write((char*)packet->data, packet->size);
 			av_packet_unref(packet);
 		}

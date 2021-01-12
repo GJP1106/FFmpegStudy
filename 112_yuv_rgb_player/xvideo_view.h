@@ -10,12 +10,15 @@
 // 线程安全
 struct AVFrame;
 void MSleep(unsigned int ms);
+// 获取当前时间
+long long NowMs();
 class XVideoView
 {
 public:
 	enum Format //枚举的值和ffmpeg中一致
 	{
 		YUV420P,
+		RGB24 = 2,
 		ARGB = 25,
 		RGBA = 26,
 		BGRA = 28

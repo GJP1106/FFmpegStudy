@@ -20,6 +20,11 @@ void MSleep(unsigned int ms)
 	}
 }
 
+long long NowMs()
+{
+	return clock() / (CLOCKS_PER_SEC / 1000);
+}
+
 XVideoView * XVideoView::Create(RenderType type)
 {
 	switch (type)
@@ -49,14 +54,20 @@ bool XVideoView::DrawFrame(AVFrame * frame)
 	switch (frame->format)
 	{
 	case AV_PIX_FMT_YUV420P:
+		//cout << "AV_PIX_FMT_YUV420P" << endl;
 		return Draw(frame->data[0], frame->linesize[0],
 			frame->data[1], frame->linesize[1],
 			frame->data[2], frame->linesize[2]);
+	case AV_PIX_FMT_RGBA:
+	case AV_PIX_FMT_ARGB:
 	case AV_PIX_FMT_BGRA:
+		return Draw(frame->data[0], frame->linesize[0]);
+	case AV_PIX_FMT_RGB24:
 		return Draw(frame->data[0], frame->linesize[0]);
 	default:
 		break;
 	}
+	cout << frame->format << endl;
 	return true;
 }
 
@@ -94,6 +105,9 @@ AVFrame * XVideoView::Read()
 			frame_->linesize[1] = width_ / 2;	//U
 			frame_->linesize[2] = width_ / 2;	//V
 		}
+		else if (frame_->format == AV_PIX_FMT_RGB24) {
+			frame_->linesize[0] = width_ * 3;
+		}
 		// 生成AVFrame空间，使用默认对齐
 		auto re = av_frame_get_buffer(frame_, 0);
 		if (re != 0) {
@@ -116,9 +130,15 @@ AVFrame * XVideoView::Read()
 		ifs_.read((char*)frame_->data[2],
 			frame_->linesize[2] * height_ / 2);		//V
 	}
+	else if (frame_->format == AV_PIX_FMT_RGB24) {
+		ifs_.read((char *)frame_->data[0], frame_->linesize[0] * height_);
+	}
+	else {  // RGBA ARGB BGRA 32
+		ifs_.read((char*)frame_->data[0], frame_->linesize[0] * height_);
+	}
 	if (ifs_.gcount() == 0) {
 		return NULL;
 	}
 
-	return nullptr;
+	return frame_;
 }

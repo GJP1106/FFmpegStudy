@@ -58,6 +58,7 @@ public:
         pix1->addItem(QString());
         pix1->addItem(QString());
         pix1->addItem(QString());
+        pix1->addItem(QString());
         pix1->setObjectName(QString::fromUtf8("pix1"));
         pix1->setGeometry(QRect(30, 240, 91, 22));
         width1 = new QSpinBox(xvideoViewClass);
@@ -91,6 +92,7 @@ public:
         height2->setMaximum(99997);
         height2->setValue(300);
         pix2 = new QComboBox(xvideoViewClass);
+        pix2->addItem(QString());
         pix2->addItem(QString());
         pix2->addItem(QString());
         pix2->addItem(QString());
@@ -132,11 +134,13 @@ public:
         pix1->setItemText(1, QCoreApplication::translate("xvideoViewClass", "RGBA", nullptr));
         pix1->setItemText(2, QCoreApplication::translate("xvideoViewClass", "ARGB", nullptr));
         pix1->setItemText(3, QCoreApplication::translate("xvideoViewClass", "BGRA", nullptr));
+        pix1->setItemText(4, QCoreApplication::translate("xvideoViewClass", "RGB24", nullptr));
 
         pix2->setItemText(0, QCoreApplication::translate("xvideoViewClass", "YUV420P", nullptr));
         pix2->setItemText(1, QCoreApplication::translate("xvideoViewClass", "RGBA", nullptr));
         pix2->setItemText(2, QCoreApplication::translate("xvideoViewClass", "ARGB", nullptr));
         pix2->setItemText(3, QCoreApplication::translate("xvideoViewClass", "BGRA", nullptr));
+        pix2->setItemText(4, QCoreApplication::translate("xvideoViewClass", "RGB24", nullptr));
 
         open2->setText(QCoreApplication::translate("xvideoViewClass", "Open", nullptr));
         fps1->setText(QCoreApplication::translate("xvideoViewClass", "FPS:", nullptr));

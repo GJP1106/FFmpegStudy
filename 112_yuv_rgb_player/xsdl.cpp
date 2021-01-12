@@ -96,12 +96,16 @@ bool XSDL::Init(int w, int h, Format fmt)
 	unsigned int sdl_fmt = SDL_PIXELFORMAT_RGBA8888;
 	switch (fmt) {
 	case XVideoView::RGBA:
+		sdl_fmt = SDL_PIXELFORMAT_RGBA32;
 		break;
 	case XVideoView::ARGB:
 		sdl_fmt = SDL_PIXELFORMAT_ARGB32;
 		break;
 	case XVideoView::YUV420P:
 		sdl_fmt = SDL_PIXELFORMAT_IYUV;
+		break;
+	case XVideoView::RGB24:
+		sdl_fmt = SDL_PIXELFORMAT_RGB24;
 		break;
 	default:
 		break;
@@ -130,6 +134,9 @@ bool XSDL::Draw(const unsigned char * data, int linesize)
 	if (linesize <= 0) {
 		switch (fmt_)
 		{
+		case XVideoView::RGB24:
+			linesize = width_ * 3;
+			break;
 		case XVideoView::RGBA:
 		case XVideoView::ARGB:
 			linesize = width_ * 4;

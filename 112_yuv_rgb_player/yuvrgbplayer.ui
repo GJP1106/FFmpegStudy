@@ -34,8 +34,8 @@
     <rect>
      <x>280</x>
      <y>20</y>
-     <width>181</width>
-     <height>171</height>
+     <width>201</width>
+     <height>181</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -85,6 +85,11 @@
    <item>
     <property name="text">
      <string>BGRA</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>RGB24</string>
     </property>
    </item>
   </widget>
@@ -210,6 +215,11 @@
    <item>
     <property name="text">
      <string>BGRA</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>RGB24</string>
     </property>
    </item>
   </widget>

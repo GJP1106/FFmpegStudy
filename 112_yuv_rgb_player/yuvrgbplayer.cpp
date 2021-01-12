@@ -33,7 +33,35 @@ void yuvRgbPlayer::resizeEvent(QResizeEvent * ev)
 }
 void yuvRgbPlayer::View()
 {
-
+	//存放上次渲染的时间戳
+	static int last_pts[32] = { 0 };
+	static int fps_arr[32] = { 0 };
+	fps_arr[0] = ui.set_fps1->value();
+	fps_arr[1] = ui.set_fps2->value();
+	for (int i = 0; i < views.size(); i++) {
+		if (fps_arr[i] <= 0) continue;
+		// 需要间隔时间
+		int ms = 1000 / fps_arr[i];
+		// 判断是否到了可渲染时间
+		if (NowMs() - last_pts[i] < ms) {
+			continue;
+		}
+		last_pts[i] = NowMs();
+		auto frame = views[i]->Read();
+		if (!frame) {
+			continue;
+		}
+		views[i]->DrawFrame(frame);
+		// 显示fps
+		stringstream ss;
+		ss << "fps:" << views[i]->render_fps();
+		if (i == 0) {
+			ui.fps1->setText(ss.str().c_str());
+		}
+		else {
+			ui.fps2->setText(ss.str().c_str());
+		}
+	}
 }
 void yuvRgbPlayer::Main()
 {
@@ -63,6 +91,7 @@ void yuvRgbPlayer::Open(int i)
 	// 打开文件
 	if (!views[i]->Open(filename.toStdString()))
 	{
+		cout << "Open file failed!" << endl;
 		return;
 	}
 	int w = 0;
@@ -90,6 +119,9 @@ void yuvRgbPlayer::Open(int i)
 	}
 	else if (pix == "BGRA") {
 		fmt = XVideoView::BGRA;
+	}
+	else if (pix == "RGB24") {
+		fmt = XVideoView::RGB24;
 	}
 	// 初始化窗口和材质
 	views[i]->Init(w, h, fmt);

@@ -145,6 +145,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="first_ffmpeg.cpp" />
+    <ClCompile Include="xencode.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xencode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

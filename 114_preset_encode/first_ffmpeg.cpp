@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "xencode.h"
 using namespace std;
 extern "C"{ //指定函数是c语言函数，函数名不包含重载标注
 //引用ffmpeg头文件
@@ -33,8 +34,125 @@ void Encode(int index, char *str)
 	else if (codec_id == AV_CODEC_ID_HEVC) {
 		filename += ".h265";
 	}
+	//输出文件
 	ofstream ofs;
 	ofs.open(filename, ios::binary);
+	XEncode en;
+	auto c = en.Create(codec_id);
+	c->width = 400;
+	c->height = 300;
+	en.set_c(c);
+	en.SetOpt("crf", 18); // 恒定速率因子(CRF)
+	en.SetOpt("preset", "ultrafast");
+	//en.SetOpt("qp", 18);
+	en.Open();
+	int count = 0; //写入文件的帧数 SPS PPS IDR放在一帧中
+
+	auto frame = en.CreateFrame();
+#if 0
+	for (int i = 0; i < 500; i++) {
+		// 生成AVFrame 数据  每帧数据不同
+		// Y
+		for (int y = 0; y < c->height; y++) {
+			for (int x = 0; x < c->width; x++) {
+				frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
+			}
+		}
+		//UV
+		for (int y = 0; y < c->height / 2; y++) {
+			for (int x = 0; x < c->width / 2; x++) {
+				frame->data[1][y * frame->linesize[1] + x] = 128 + y + i * 2;
+				frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
+			}
+		}
+		frame->pts = i;   // 显示时间
+		auto pkt = en.Encode(frame);
+		if (pkt) {
+			count++;
+			ofs.write((char *)pkt->data, pkt->size);
+			av_packet_free(&pkt);
+		}
+	}
+#endif
+	int width = 400;
+	int height = 300;
+	int rgb_width = 800;
+	int rgb_height = 600;
+	// YUV420P 平面存储 yyyy yyyy uu vv
+	unsigned char *yuv[3] = { 0 };
+	int yuv_linesize[3] = { width, width / 2, width / 2 };
+
+
+	// RGBA交叉存储 RGBA RGBA
+	unsigned char *rgba = new unsigned char[rgb_width * rgb_height * 4];
+	int rgba_linesize = rgb_width * 4;
+
+	ifstream ifs;
+	ifs.open(RGBA_FILE, ios::binary);
+	if (!ifs) {
+		cerr << "open " << RGBA_FILE << " failed!" << endl;
+		return;
+	}
+
+	SwsContext *rgba2yuv = nullptr;
+	int i = 0;
+	for (;;) {
+		// 读取RGBA数据
+		ifs.read((char*)rgba, rgb_width * rgb_height * 4);
+		if (ifs.gcount() == 0) break;
+		// YUV转RGB
+		rgba2yuv = sws_getCachedContext(
+			rgba2yuv,						// 转换上下文，NULL新创建，非NULL判断与现有参数是否一致，一直直接返回，
+											// 不一致先清理当前的数据再创建
+			rgb_width, rgb_height,			// 输入宽高
+			AV_PIX_FMT_RGBA,				//输入像素格式
+			width, height,					//输出的宽高
+			AV_PIX_FMT_YUV420P,				//输出的像素格式
+			SWS_BILINEAR,					//选择支持变化的算法，双线性插值
+			0, 0, 0							//过滤器参数(不使用)
+		);
+		if (!rgba2yuv) {
+			cerr << "sws_getCachedContext failed!" << endl;
+			return;
+		}
+
+		unsigned char* data[1];
+		data[0] = rgba;
+		int lines[1] = { rgba_linesize };
+		int re = sws_scale(rgba2yuv,
+			data,			//输入数据
+			lines,	//输入输就行字节数 
+			0,
+			rgb_height,			//输入高度
+			frame->data,			//输出数据
+			frame->linesize
+		);
+		i++;
+		//cout << re << " " << flush;
+		frame->pts = i;   // 显示时间
+		auto pkt = en.Encode(frame);
+		if (pkt) {
+			count++;
+			ofs.write((char *)pkt->data, pkt->size);
+			av_packet_free(&pkt);
+		}
+
+	}
+
+
+
+	auto pkts = en.End();
+	for (auto pkt : pkts) {
+		count++;
+		ofs.write((char *)pkt->data, pkt->size);
+		av_packet_free(&pkt);
+	}
+	ofs.close();
+	delete rgba;
+	ifs.close();
+	en.set_c(nullptr);
+	cout << "encode" << count << endl;
+#if 0
 	/// 1、找到编码器 AV_CODEC_ID_HEVC(h265)
 	auto codec = avcodec_find_encoder(codec_id);
 	if (!codec) {
@@ -186,11 +304,12 @@ void Encode(int index, char *str)
 			av_packet_unref(packet);
 		}
 	}
-	ofs.close();
 	av_packet_free(&packet);
 	av_frame_free(&frame);
 	/// 释放编码器上下文
 	avcodec_free_context(&c);
+#endif
+	
 }
 
 void YUVToRGBA()

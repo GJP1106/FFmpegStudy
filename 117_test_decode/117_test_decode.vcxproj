@@ -134,10 +134,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="117_test_decode.cpp" />
+    <ClCompile Include="xencode.cpp" />
     <ClCompile Include="xsdl.cpp" />
     <ClCompile Include="xvideo_view.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="xencode.h" />
     <ClInclude Include="xsdl.h" />
     <ClInclude Include="xvideo_view.h" />
   </ItemGroup>

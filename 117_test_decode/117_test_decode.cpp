@@ -1,40 +1,60 @@
 #include <iostream>
 #include <fstream>
 #include "xvideo_view.h"
+#include "xencode.h"
 using namespace std;
 
 extern "C" { //指定函数是c语言函数，函数名不包含重载标注
 //引用ffmpeg头文件
 #include <libavcodec/avcodec.h>
 //#include <libavutil/frame.h>
-//#include <libswscale/swscale.h>
+#include <libswscale/swscale.h>
 #include <libavutil/opt.h>
 }
 //预处理指令导入库
 #pragma comment(lib,"avcodec.lib")
 #pragma comment(lib,"avutil.lib")
-//#pragma comment(lib, "swscale.lib")
+#pragma comment(lib, "swscale.lib")
+
+int encWidth = 800;
+int encHeight = 600;
 
 int main(int argc, char* argv[])
 {
 	auto view = XVideoView::Create();
 	// 1、分割h264 存入AVPacket
 	// ffmpeg -i v1080.mp4 -s 400x300 test.h264
-	string filename = "test.h264";
+	string filename = "test_1080p.h264";
+	string encodefile = "400_300_after_decode.h264";
 	ifstream ifs(filename, ios::binary);
 	if (!ifs) return -1;
+	ofstream enofs;
+	enofs.open(encodefile, ios::binary);
+	//if (!enofs) return -1;
 	unsigned char inbuf[4096] = { 0 };
 
 	AVCodecID codec_id = AV_CODEC_ID_H264;
 
+	XEncode en;
 	// 1、找解码器
 	auto codec = avcodec_find_decoder(codec_id);
-
+	auto enctx = en.Create(codec_id);
+	if (!enctx) {
+		cerr << "AVCodecContext not find!" << endl;
+		return -1;
+	}
 	// 2、创建上下文
 	auto c = avcodec_alloc_context3(codec);
 	c->thread_count = 16;
 	// 3、打开上下文
 	avcodec_open2(c, NULL, NULL);
+	enctx->width = encWidth;
+	enctx->height = encHeight;
+	en.set_c(enctx);
+	en.SetOpt("crf", 18);
+	en.SetOpt("preset", "ultrafast");
+	en.Open();
+	auto enFrame = en.CreateFrame();
 
 	// 分割上下文
 	auto parser = av_parser_init(codec_id);
@@ -43,6 +63,7 @@ int main(int argc, char* argv[])
 	auto begin = NowMs();
 	int count = 0;  // 解码统计
 	bool is_init_win = false;
+	SwsContext *transYuv = nullptr;
 	while (!ifs.eof()) {
 		ifs.read((char *)inbuf, sizeof(inbuf));
 		int data_size = ifs.gcount();  //读取的字节数
@@ -79,8 +100,28 @@ int main(int argc, char* argv[])
 						is_init_win = true;
 						view->Init(frame->width, frame->height, (XVideoView::Format)frame->format);
 					}
+
 					view->DrawFrame(frame);
-					count++;
+					transYuv = sws_getCachedContext(transYuv,
+						frame->width, frame->height,
+						AV_PIX_FMT_YUV420P,
+						encWidth, encHeight,
+						AV_PIX_FMT_YUV420P,
+						SWS_BILINEAR, 0, 0, 0);
+					if (!transYuv) {
+						cerr << "sws_getCachedContext failed!" << endl;
+					}
+
+					int re = sws_scale(transYuv, frame->data,
+						frame->linesize, 0,
+						frame->height, enFrame->data, enFrame->linesize);
+					enFrame->pts = count;
+					auto enpkt = en.Encode(enFrame);
+					if (enpkt) {
+						count++;
+						enofs.write((char *)enpkt->data, enpkt->size);
+						av_packet_free(&enpkt);
+					}
 					auto cur = NowMs();
 					if (cur - begin >= 100) {  // 1/10秒钟计算一次
 						cout << "\nfps = " << count * 10 << endl;

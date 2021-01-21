@@ -64,6 +64,7 @@ int main(int argc, char* argv[])
 	int count = 0;  // 解码统计
 	bool is_init_win = false;
 	SwsContext *transYuv = nullptr;
+	int count1 = 0;
 	while (!ifs.eof()) {
 		ifs.read((char *)inbuf, sizeof(inbuf));
 		int data_size = ifs.gcount();  //读取的字节数
@@ -115,7 +116,8 @@ int main(int argc, char* argv[])
 					int re = sws_scale(transYuv, frame->data,
 						frame->linesize, 0,
 						frame->height, enFrame->data, enFrame->linesize);
-					enFrame->pts = count;
+					enFrame->pts = count1;
+					count1++;
 					auto enpkt = en.Encode(enFrame);
 					if (enpkt) {
 						count++;

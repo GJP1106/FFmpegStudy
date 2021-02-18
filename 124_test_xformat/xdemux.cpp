@@ -6,7 +6,7 @@ using namespace std;
 extern "C" {
 #include <libavformat/avformat.h>
 }
-void PrintErr(int err)
+static void PrintErr(int err)
 {
 	char buf[1024] = { 0 };
 	av_strerror(err, buf, sizeof(buf) - 1);

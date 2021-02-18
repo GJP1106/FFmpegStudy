@@ -128,14 +128,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="124_test_xformat.cpp" />
+    <ClCompile Include="xcodec.cpp" />
+    <ClCompile Include="xdecode.cpp" />
     <ClCompile Include="xdemux.cpp" />
+    <ClCompile Include="xencode.cpp" />
     <ClCompile Include="xformat.cpp" />
     <ClCompile Include="xmux.cpp" />
+    <ClCompile Include="xsdl.cpp" />
+    <ClCompile Include="xvideo_view.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="xcodec.h" />
+    <ClInclude Include="xdecode.h" />
     <ClInclude Include="xdemux.h" />
+    <ClInclude Include="xencode.h" />
     <ClInclude Include="xformat.h" />
     <ClInclude Include="xmux.h" />
+    <ClInclude Include="xsdl.h" />
+    <ClInclude Include="xvideo_view.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

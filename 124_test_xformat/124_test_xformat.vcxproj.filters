@@ -27,6 +27,21 @@
     <ClCompile Include="xmux.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="xcodec.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="xdecode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="xencode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="xvideo_view.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="xsdl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xformat.h">
@@ -36,6 +51,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="xmux.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xcodec.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xdecode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xencode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xvideo_view.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xsdl.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

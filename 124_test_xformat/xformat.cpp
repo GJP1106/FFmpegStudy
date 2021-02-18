@@ -27,6 +27,23 @@ bool XFormat::CopyPara(int stream_index, AVCodecParameters * dst)
 	return true;
 }
 
+bool XFormat::CopyPara(int stream_index, AVCodecContext * dst)
+{
+	unique_lock<mutex> lock(mux_);
+	if (!c_) {
+		return  false;
+	}
+	if (stream_index < 0 || stream_index > c_->nb_streams) {
+		return false;
+	}
+	auto re = avcodec_parameters_to_context(dst, c_->streams[stream_index]->codecpar);
+	if (re < 0) {
+		return false;
+	}
+
+	return true;
+}
+
 void XFormat::set_c(AVFormatContext * c)
 {
 	unique_lock<mutex> lock(mux_);
@@ -62,6 +79,7 @@ void XFormat::set_c(AVFormatContext * c)
 			video_index_ = i;
 			video_time_base_.den = c->streams[i]->time_base.den;
 			video_time_base_.num = c->streams[i]->time_base.num;
+			video_codec_id_ = c->streams[i]->codecpar->codec_id;
 		}
 	}
 }

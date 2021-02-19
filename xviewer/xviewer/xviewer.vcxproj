@@ -92,6 +92,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="xcamera_config.cpp" />
     <ClCompile Include="xviewer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="xcamera_config.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xviewer.rc" />

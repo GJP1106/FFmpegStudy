@@ -66,6 +66,9 @@ XViewer::XViewer(QWidget *parent)
 	// 刷新左侧相机列表
 	XCameraConfig::Instance()->Load(CAM_CONF_PATH);
 	RefreshCams();
+
+	// 启动定时器渲染视频
+	startTimer(1);
 }
 
 // 鼠标拖动窗口事件
@@ -110,7 +113,18 @@ void XViewer::contextMenuEvent(QContextMenuEvent * event)
 	left_menu_.exec(QCursor::pos());
 	event->accept();
 }
-
+// 定时器渲染视频 回调函数
+void XViewer::timerEvent(QTimerEvent * ev)
+{
+	// 总窗口数量
+	int wid_size = sizeof(cam_wids) / sizeof(QWidget*);
+	for (int i = 0; i < wid_size; i++) {
+		if (cam_wids[i]) {
+			// 渲染多窗口视频
+			cam_wids[i]->Draw();
+		}
+	}
+}
 void XViewer::View(int count)
 {
 	qDebug() << "View" << count;
@@ -224,7 +238,7 @@ void XViewer::SetCam(int index)
 	lay.addRow("", &save);
 
 	// 编辑 读入原数据显示
-	if (index > 0) {
+	if (index >= 0) {
 		auto cam = c->GetCam(index);
 		name_edit.setText(C(cam.name));
 		url_edit.setText(C(cam.url));
@@ -259,7 +273,7 @@ void XViewer::SetCam(int index)
 	strcpy(data.url, url_edit.text().toLocal8Bit());
 	strcpy(data.sub_url, sub_url_edit.text().toLocal8Bit());
 	strcpy(data.save_path, save_path_edit.text().toLocal8Bit());
-	if (index > 0) {		//修改
+	if (index >= 0) {		//修改
 		c->SetCam(index, data);
 	}
 	else {		// 新增

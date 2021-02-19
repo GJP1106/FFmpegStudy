@@ -28,6 +28,9 @@ public:
 	void RefreshCams();
 	// 编辑摄像机
 	void SetCam(int index);
+
+	// 定时器渲染视频 回调函数
+	void timerEvent(QTimerEvent *ev) override;
 public slots:
 	void MaxWindow();
 	void NormalWindow();

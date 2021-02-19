@@ -5,6 +5,10 @@
 #include <QDropEvent>
 #include <QDebug>
 #include <QListWidget>
+#include "xdemuxtask.h"
+#include "xdecodetask.h"
+#include "xvideo_view.h"
+#include "xcamera_config.h"
 
 XCameraWidget::XCameraWidget(QWidget * p) : QWidget(p)
 {
@@ -24,6 +28,8 @@ void XCameraWidget::dropEvent(QDropEvent * e)
 	qDebug() << e->source()->objectName();
 	auto wid = (QListWidget*)e->source();
 	qDebug() << wid->currentRow();
+	auto cam = XCameraConfig::Instance()->GetCam(wid->currentRow());
+	Open(cam.sub_url);
 }
 
 //渲染
@@ -35,3 +41,68 @@ void XCameraWidget::paintEvent(QPaintEvent * p)
 	QPainter painter(this);
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 }
+
+XCameraWidget::~XCameraWidget()
+{
+	if (demux_) {
+		demux_->Stop();
+		delete demux_;
+		demux_ = nullptr;
+	}
+	if (decode_) {
+		decode_->Stop();
+		delete decode_;
+		decode_ = nullptr;
+	}
+	if (view_) {
+		view_->Close();
+		delete view_;
+		view_ = nullptr;
+	}
+}
+
+bool XCameraWidget::Open(const char * url)
+{
+	if (demux_) {
+		demux_->Stop();
+	}
+	if (decode_) {
+		decode_->Stop();
+	}
+	// 打开解封装线程
+	demux_ = new XDemuxTask();
+	if (!demux_->Open(url)) {
+		return false;
+	}
+	qDebug() << "=========demux_open========";
+	//打开视频解码器线程
+	decode_ = new XDecodeTask();
+	auto para = demux_->CopyVideoPara();
+	if (!decode_->Open(para->para)) {
+		return false;
+	}
+	qDebug() << "=========decode_->Open========";
+	// 设定解码线程接收解封装数据
+	demux_->set_next(decode_);
+	// 初始化渲染参数
+	view_ = XVideoView::Create();
+	view_->set_win_id((void*)winId());
+	view_->Init(para->para);
+
+	// 启动解封装和解码线程
+	demux_->Start();
+	decode_->Start();
+
+	return true;
+}
+
+void XCameraWidget::Draw()
+{
+	if (!demux_ || !decode_ || !view_) return;
+	auto f = decode_->GetFrame();
+	if (!f) return;
+	view_->DrawFrame(f);
+	XFreeFrame(&f);
+}
+
+

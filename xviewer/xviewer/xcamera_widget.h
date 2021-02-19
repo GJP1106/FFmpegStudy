@@ -1,6 +1,9 @@
 #pragma once
 //#include "E:\Qt5.14.2\5.14.2\msvc2017\include\QtWidgets\qwidget.h"
 #include <QWidget>
+class XDecodeTask;
+class XDemuxTask;
+class XVideoView;
 class XCameraWidget : public QWidget
 {
 	Q_OBJECT
@@ -14,5 +17,16 @@ public:
 
 	//渲染
 	void paintEvent(QPaintEvent* p);
+
+	// 打开rtsp 开始解封装 解码
+	bool Open(const char* url);
+
+	// 渲染视频
+	void Draw();
+	~XCameraWidget();
+private:
+	XDecodeTask *decode_ = nullptr;
+	XDemuxTask *demux_ = nullptr;
+	XVideoView *view_ = nullptr;
 };
 

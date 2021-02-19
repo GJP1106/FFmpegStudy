@@ -8,10 +8,10 @@
 
 using namespace std;
 
-//#define CAM1 "rtsp://127.0.0.1:8554/test"
+#define CAM1 "rtsp://127.0.0.1:8554/test"
 //#define CAM1 "rtsp://3.84.6.190/vod/mp4:BigBuckBunny_115k.mov"
 
-#define CAM1 "400_300_25.mp4"
+//#define CAM1 "400_300_25.mp4"
 int main(int argc, char* argv[])
 {
 	XDemuxTask demux_task;

@@ -1,6 +1,10 @@
 #pragma once
 #include <thread>
 #include <mutex>
+#include <list>
+struct AVPacket;
+struct AVCodecParameters;
+struct AVRational;
 // 日志级别 DEBUG INFO FATAL
 enum XLogLevel
 {
@@ -30,6 +34,21 @@ public:
 
 	// 停止线程(设置退出标志，等待线程退出)
 	virtual void Stop();
+
+	// 执行任务 需要重载
+	virtual void Do(AVPacket* pkt) {}
+	//传递到下一个责任链函数
+	virtual void Next(AVPacket* pkt) {
+		std::unique_lock<std::mutex> lock(m_);
+		if (next_) {
+			next_->Do(pkt);
+		}
+	}
+	// 设置责任链下一个节点(线程安全)
+	void set_next(XThread* xt) {
+		std::unique_lock<std::mutex> lock(m_);
+		next_ = xt;
+	}
 protected:
 	// 线程入口函数
 	virtual void Main() = 0;
@@ -40,8 +59,35 @@ protected:
 private:
 	std::thread th_;
 	std::mutex m_;
+	XThread *next_ = nullptr;		//责任链下一个结点
 };
 class XTools
 {
+};
+
+// 音视频参数
+class XPara
+{
+public:
+	AVCodecParameters* para = nullptr;	//音视频参数
+	AVRational *time_base = nullptr;	//时间基数
+	// 创建对象
+	static XPara* Create();
+	~XPara();
+private:
+	// 私有是禁止创建栈中对象
+	XPara();
+};
+
+// 线程安全avpacket list
+class XAVPacketList
+{
+public:
+	AVPacket* Pop();
+	void Push(AVPacket* pkt);
+private:
+	std::list<AVPacket *> pkts_;
+	int max_packets_ = 100; //最大列表数量， 超出清理
+	std::mutex mux_;
 };
 

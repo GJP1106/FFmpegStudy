@@ -136,6 +136,7 @@
     <ClCompile Include="126_rtsp_demux_thread.cpp" />
     <ClCompile Include="xcodec.cpp" />
     <ClCompile Include="xdecode.cpp" />
+    <ClCompile Include="xdecodetask.cpp" />
     <ClCompile Include="xdemux.cpp" />
     <ClCompile Include="xdemuxtask.cpp" />
     <ClCompile Include="xencode.cpp" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="xcodec.h" />
     <ClInclude Include="xdecode.h" />
+    <ClInclude Include="xdecodetask.h" />
     <ClInclude Include="xdemux.h" />
     <ClInclude Include="xdemuxtask.h" />
     <ClInclude Include="xencode.h" />

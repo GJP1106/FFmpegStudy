@@ -52,6 +52,19 @@ bool XFormat::CopyPara(int stream_index, AVCodecContext * dst)
 	return true;
 }
 
+std::shared_ptr<XPara> XFormat::CopyVideoPara()
+{
+	int index = video_index();
+	shared_ptr<XPara> re;
+	unique_lock<mutex> lock(mux_);
+	if (index < 0 || !c_) return re;
+	re.reset(XPara::Create());
+	*re->time_base = c_->streams[index]->time_base;
+	avcodec_parameters_copy(re->para, c_->streams[index]->codecpar);
+
+	return re;
+}
+
 void XFormat::set_c(AVFormatContext * c)
 {
 	unique_lock<mutex> lock(mux_);

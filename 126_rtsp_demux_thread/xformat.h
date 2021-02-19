@@ -17,6 +17,8 @@ public:
 	//
 	bool CopyPara(int stream_index, AVCodecParameters* dst);
 	bool CopyPara(int stream_index, AVCodecContext* dst);
+	// 返回智能指针 复制视频参数
+	std::shared_ptr<XPara> CopyVideoPara();
 	// 设置上下文， 并且清理上次的设置的值，如果传递NULL,  相当于关闭上下文
 	// 线程安全
 	void set_c(AVFormatContext *c);

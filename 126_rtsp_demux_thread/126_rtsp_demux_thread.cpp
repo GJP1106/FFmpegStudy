@@ -2,6 +2,7 @@
 #include <thread>
 #include "xtools.h"
 #include "xdemuxtask.h"
+#include "xdecodetask.h"
 
 using namespace std;
 //class TestThread : public XThread
@@ -17,6 +18,9 @@ using namespace std;
 //	}
 //};
 #define CAM1 "rtsp://127.0.0.1:8554/test"
+//#define CAM1 "rtsp://3.84.6.190/vod/mp4:BigBuckBunny_115k.mov"
+
+//#define CAM1 "v1080.mp4"
 int main(int argc, char* argv[])
 {
 	//TestThread tt;
@@ -31,7 +35,19 @@ int main(int argc, char* argv[])
 		MSleep(100);
 		continue;
 	}
-	det.Start();
+	auto para = det.CopyVideoPara();
+	XDecodeTask decode_task;
+	if (!decode_task.Open(para->para)) {
+		LOGERROR("open decode failed!");
+	}
+	else {
+		// 设定下一个责任
+		det.set_next(&decode_task);
+		det.Start();
+		decode_task.Start();
+
+	}
+
 	getchar();
 	return 0;
 }

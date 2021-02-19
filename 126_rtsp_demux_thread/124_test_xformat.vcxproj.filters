@@ -48,6 +48,9 @@
     <ClCompile Include="xdemuxtask.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="xdecodetask.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xformat.h">
@@ -78,6 +81,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="xdemuxtask.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xdecodetask.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

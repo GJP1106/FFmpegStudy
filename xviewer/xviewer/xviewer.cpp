@@ -6,6 +6,15 @@
 #include <QDebug>
 #include <QContextMenuEvent>
 #include <QGridLayout>
+#include "xcamera_config.h"
+#include <QListWidgetItem>
+#include <QDialog>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <sstream>
+using namespace std;
+#define CAM_CONF_PATH "test.db"
 //解决中文乱码
 #define C(s) QString::fromLocal8Bit(s)
 
@@ -53,6 +62,9 @@ XViewer::XViewer(QWidget *parent)
 	// 默认窗口
 	View(9);
 
+	// 刷新左侧相机列表
+	XCameraConfig::Instance()->Load(CAM_CONF_PATH);
+	RefreshCams();
 }
 
 // 鼠标拖动窗口事件
@@ -131,6 +143,19 @@ void XViewer::View(int count)
 	}
 }
 
+void XViewer::RefreshCams()
+{
+	auto c = XCameraConfig::Instance();
+	ui.cam_list->clear();
+	int count = c->GetCamCount();
+	for (int i = 0; i < count; i++) {
+		auto cam = c->GetCam(i);
+		auto item = new QListWidgetItem(QIcon(":/XViewer/img/cam.png"), C(cam.name));
+		ui.cam_list->addItem(item);
+	}
+}
+
+
 void XViewer::MaxWindow()
 {
 	ui.max->setVisible(false);
@@ -159,4 +184,107 @@ void XViewer::View9()
 void XViewer::View16()
 {
 	View(16);
+}
+
+void XViewer::AddCam()
+{
+	SetCam(-1);
+}
+
+void XViewer::SetCam()
+{
+	int row = ui.cam_list->currentIndex().row();
+	if (row < 0) {
+		QMessageBox::information(this, "error", C("请选择摄像机"));
+		return;
+	}
+	SetCam(row);
+}
+void XViewer::SetCam(int index)
+{
+	auto c = XCameraConfig::Instance();
+	QDialog dlg(this);
+	dlg.resize(800, 200);
+	QFormLayout lay;
+	dlg.setLayout(&lay);
+	// 标题1 输入框1
+	QLineEdit name_edit;
+	lay.addRow(C("名称"), &name_edit);
+	QLineEdit url_edit;
+	lay.addRow(C("主码流"), &url_edit);
+	QLineEdit sub_url_edit;
+	lay.addRow(C("辅码流"), &sub_url_edit);
+	QLineEdit save_path_edit;
+	lay.addRow(C("保存目录"), &save_path_edit);
+
+	QPushButton save;
+	save.setText(C("保存"));
+	connect(&save, SIGNAL(clicked()), &dlg, SLOT(accept()));
+	lay.addRow("", &save);
+
+	// 编辑 读入原数据显示
+	if (index > 0) {
+		auto cam = c->GetCam(index);
+		name_edit.setText(C(cam.name));
+		url_edit.setText(C(cam.url));
+		sub_url_edit.setText(C(cam.sub_url));
+		save_path_edit.setText(C(cam.save_path));
+	}
+
+	for (;;) {
+		if (dlg.exec() == QDialog::Accepted) {    // 点击了保存
+			if (name_edit.text().isEmpty()) {
+				QMessageBox::information(0, "error", C("请输入名称"));
+				continue;
+			}
+			if (url_edit.text().isEmpty()) {
+				QMessageBox::information(0, "error", C("请输入主码流"));
+				continue;
+			}
+			if (sub_url_edit.text().isEmpty()) {
+				QMessageBox::information(0, "error", C("请输入辅码流"));
+				continue;
+			}
+			if (save_path_edit.text().isEmpty()) {
+				QMessageBox::information(0, "error", C("请输入保存目录"));
+				continue;
+			}
+			break;
+		}
+		return;
+	}
+	XCameraData data;
+	strcpy(data.name, name_edit.text().toLocal8Bit());
+	strcpy(data.url, url_edit.text().toLocal8Bit());
+	strcpy(data.sub_url, sub_url_edit.text().toLocal8Bit());
+	strcpy(data.save_path, save_path_edit.text().toLocal8Bit());
+	if (index > 0) {		//修改
+		c->SetCam(index, data);
+	}
+	else {		// 新增
+		c->Push(data);			//插入数据
+	}
+	c->Save(CAM_CONF_PATH);	//保存到文件
+	RefreshCams();	//刷新显示
+}
+
+void XViewer::DelCam()
+{
+	int row = ui.cam_list->currentIndex().row();
+	if (row < 0) {
+		QMessageBox::information(this, "error", C("请选择摄像机"));
+		return;
+	}
+	stringstream ss;
+	ss << "您确认删除摄像机" << ui.cam_list->currentItem()->text().toLocal8Bit().constData();
+	ss << "吗?";
+	if (QMessageBox::information(this,
+		"confirm",
+		C(ss.str().c_str()),
+		QMessageBox::Yes,
+		QMessageBox::No) != QMessageBox::Yes) {
+		return;
+	}
+	XCameraConfig::Instance()->DelCam(row);
+	RefreshCams();
 }

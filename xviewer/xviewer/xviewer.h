@@ -21,7 +21,13 @@ public:
 	//右键菜单
 	void contextMenuEvent(QContextMenuEvent* event) override;
 
+	//预览视频窗口
 	void View(int count);
+
+	// 刷新左侧相机列表
+	void RefreshCams();
+	// 编辑摄像机
+	void SetCam(int index);
 public slots:
 	void MaxWindow();
 	void NormalWindow();
@@ -29,6 +35,9 @@ public slots:
 	void View4();
 	void View9();
 	void View16();
+	void AddCam();		//新增摄像机配置
+	void SetCam();		//修改摄像机配置
+	void DelCam();		//删除摄像机
 
 private:
 	Ui::XViewerClass ui;

@@ -5,6 +5,7 @@
 #define TEST_CAM_PATH "test.db"
 int main(int argc, char *argv[])
 {
+#if 0
 	auto *xc = XCameraConfig::Instance();
 	xc->Load(TEST_CAM_PATH);
 	{
@@ -46,6 +47,7 @@ int main(int argc, char *argv[])
 		qDebug() << cam.name;
 	}
 	xc->DelCam(0);
+#endif
 	QApplication a(argc, argv);
 	XViewer w;
 	w.show();

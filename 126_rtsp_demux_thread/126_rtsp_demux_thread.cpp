@@ -3,6 +3,7 @@
 #include "xtools.h"
 #include "xdemuxtask.h"
 #include "xdecodetask.h"
+#include "xvideo_view.h"
 
 using namespace std;
 //class TestThread : public XThread
@@ -17,10 +18,10 @@ using namespace std;
 //		LOGDEBUG("TestTHread Main end");
 //	}
 //};
-#define CAM1 "rtsp://127.0.0.1:8554/test"
+//#define CAM1 "rtsp://127.0.0.1:8554/test"
 //#define CAM1 "rtsp://3.84.6.190/vod/mp4:BigBuckBunny_115k.mov"
 
-//#define CAM1 "v1080.mp4"
+#define CAM1 "400_300_25.mp4"
 int main(int argc, char* argv[])
 {
 	//TestThread tt;
@@ -36,6 +37,9 @@ int main(int argc, char* argv[])
 		continue;
 	}
 	auto para = det.CopyVideoPara();
+	// ³õÊ¼»¯äÖÈ¾
+	auto view = XVideoView::Create();
+	view->Init(para->para);
 	XDecodeTask decode_task;
 	if (!decode_task.Open(para->para)) {
 		LOGERROR("open decode failed!");
@@ -45,7 +49,16 @@ int main(int argc, char* argv[])
 		det.set_next(&decode_task);
 		det.Start();
 		decode_task.Start();
+	}
 
+	for (;;) {
+		auto f = decode_task.GetFrame();
+		if (!f) {
+			MSleep(1);
+			continue;
+		}
+		view->DrawFrame(f);
+		XFreeFrame(&f);
 	}
 
 	getchar();

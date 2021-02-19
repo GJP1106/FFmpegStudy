@@ -4,6 +4,7 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include "xtools.h"
 // 视频渲染接口类
 // 隐藏SDL实现
 // 渲染方案可替代
@@ -32,6 +33,7 @@ public:
 	/// @param fmt 绘制的像素格式
 	/// @param 是否创建成功
 	virtual bool Init(int w, int h, Format fmt = RGBA) = 0;
+	virtual bool Init(AVCodecParameters* para);
 
 	// 清理所有申请的资源，包括关闭窗口
 	virtual void Close() = 0;

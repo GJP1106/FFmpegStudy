@@ -25,6 +25,12 @@ long long NowMs()
 	return clock() / (CLOCKS_PER_SEC / 1000);
 }
 
+void XFreeFrame(AVFrame ** frame)
+{
+	if (!frame || !(*frame)) return;
+	av_frame_free(frame);
+}
+
 // Æô¶¯Ïß³Ì
 void XThread::Start()
 {

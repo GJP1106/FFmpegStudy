@@ -5,6 +5,7 @@
 struct AVPacket;
 struct AVCodecParameters;
 struct AVRational;
+struct AVFrame;
 // 日志级别 DEBUG INFO FATAL
 enum XLogLevel
 {
@@ -26,6 +27,8 @@ enum XLogLevel
 void MSleep(unsigned int ms);
 // 获取当前时间
 long long NowMs();
+
+void XFreeFrame(AVFrame** frame);
 
 class XThread {
 public:

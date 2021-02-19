@@ -64,6 +64,7 @@ void XDecodeTask::Main()
 		{
 			unique_lock<mutex> lock(mux_);
 			if (decode_.Recv(frame_)) {
+				need_view_ = true;
 				cout << "@" << flush;
 			}
 		}
@@ -75,4 +76,20 @@ void XDecodeTask::Main()
 			av_frame_free(&frame_);
 		}
 	}
+}
+
+AVFrame * XDecodeTask::GetFrame()
+{
+	unique_lock<mutex> lock(mux_);
+	if (!need_view_ || !frame_ || !frame_->buf[0]) return nullptr;
+	auto f = av_frame_alloc();
+	auto re = av_frame_ref(f, frame_);	//ÒýÓÃ¼Ó1
+	if (re != 0) {
+		av_frame_free(&f);
+		PrintErr(re);
+		return nullptr;
+	}
+	need_view_ = false;
+
+	return f;
 }

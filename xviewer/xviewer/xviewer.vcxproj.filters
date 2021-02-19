@@ -34,9 +34,15 @@
     <ClCompile Include="xcamera_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xcamera_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="xviewer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="xcamera_widget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

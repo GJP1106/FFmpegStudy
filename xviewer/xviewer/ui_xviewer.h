@@ -146,6 +146,7 @@ public:
         __qlistwidgetitem->setIcon(icon1);
         cam_list->setObjectName(QString::fromUtf8("cam_list"));
         cam_list->setGeometry(QRect(0, 39, 201, 961));
+        cam_list->setDragEnabled(true);
         cam_list->setIconSize(QSize(30, 30));
         add_cam = new QPushButton(left);
         add_cam->setObjectName(QString::fromUtf8("add_cam"));

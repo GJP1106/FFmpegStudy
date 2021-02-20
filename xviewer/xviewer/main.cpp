@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 	xc->DelCam(0);
 #endif
 
+#if 0
 	const char* save_path = "./video/0/";
 	QDir dir;
 	dir.mkpath(save_path);
@@ -59,11 +60,12 @@ int main(int argc, char *argv[])
 	xr.set_rtsp_url("400_300_25.mp4");
 	xr.set_save_path(save_path);
 	xr.Start();
-
+#endif
 	QApplication a(argc, argv);
 	XViewer w;
 	w.show();
-	auto re = a.exec();
-	xr.Stop();
-	return re;
+	//auto re = a.exec();
+	//xr.Stop();
+
+	return a.exec();
 }

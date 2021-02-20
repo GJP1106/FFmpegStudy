@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCalendarWidget>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
@@ -30,6 +31,8 @@ public:
     QPushButton *close;
     QPushButton *normal;
     QLabel *status;
+    QPushButton *preview;
+    QPushButton *playback;
     QWidget *body;
     QWidget *left;
     QListWidget *cam_list;
@@ -37,6 +40,9 @@ public:
     QPushButton *set_cam;
     QPushButton *del_cam;
     QWidget *cams;
+    QWidget *playback_wid;
+    QCalendarWidget *cal;
+    QListWidget *time_list;
 
     void setupUi(QWidget *XViewerClass)
     {
@@ -107,6 +113,26 @@ public:
 "{\n"
 "color: rgb(255, 255, 255);\n"
 "	font: 75 10pt \"Adobe Devanagari\";\n"
+"}\n"
+"/* tab\350\217\234\345\215\225\346\214\211\351\222\256\345\210\207\346\215\242\346\240\267\345\274\217 */\n"
+"#preview\n"
+"{\n"
+"background-color:rgb(50, 50, 50);\n"
+"}\n"
+"\n"
+"#playback\n"
+"{\n"
+"background-color:rgb(50, 50, 50);\n"
+"}\n"
+"\n"
+"#preview:checked\n"
+"{\n"
+"background-color:rgb(0, 102, 184);\n"
+"}\n"
+"\n"
+"#playback:checked\n"
+"{\n"
+"background-color:rgb(0, 102, 184);\n"
 "}"));
         head = new QWidget(XViewerClass);
         head->setObjectName(QString::fromUtf8("head"));
@@ -141,7 +167,19 @@ public:
         max->raise();
         status = new QLabel(head);
         status->setObjectName(QString::fromUtf8("status"));
-        status->setGeometry(QRect(240, 15, 191, 31));
+        status->setGeometry(QRect(490, 10, 191, 31));
+        preview = new QPushButton(head);
+        preview->setObjectName(QString::fromUtf8("preview"));
+        preview->setGeometry(QRect(215, 20, 90, 30));
+        preview->setCheckable(true);
+        preview->setChecked(true);
+        preview->setAutoExclusive(true);
+        playback = new QPushButton(head);
+        playback->setObjectName(QString::fromUtf8("playback"));
+        playback->setGeometry(QRect(340, 20, 90, 30));
+        playback->setCheckable(true);
+        playback->setChecked(false);
+        playback->setAutoExclusive(true);
         body = new QWidget(XViewerClass);
         body->setObjectName(QString::fromUtf8("body"));
         body->setGeometry(QRect(0, 50, 701, 371));
@@ -169,7 +207,20 @@ public:
         del_cam->setGeometry(QRect(140, 5, 51, 31));
         cams = new QWidget(body);
         cams->setObjectName(QString::fromUtf8("cams"));
-        cams->setGeometry(QRect(220, 10, 501, 351));
+        cams->setGeometry(QRect(210, 10, 502, 351));
+        playback_wid = new QWidget(body);
+        playback_wid->setObjectName(QString::fromUtf8("playback_wid"));
+        playback_wid->setGeometry(QRect(220, 10, 471, 351));
+        cal = new QCalendarWidget(playback_wid);
+        cal->setObjectName(QString::fromUtf8("cal"));
+        cal->setGeometry(QRect(183, 10, 291, 351));
+        time_list = new QListWidget(playback_wid);
+        new QListWidgetItem(time_list);
+        time_list->setObjectName(QString::fromUtf8("time_list"));
+        time_list->setGeometry(QRect(0, 10, 182, 351));
+        cams->raise();
+        left->raise();
+        playback_wid->raise();
 
         retranslateUi(XViewerClass);
         QObject::connect(close, SIGNAL(clicked()), XViewerClass, SLOT(close()));
@@ -179,6 +230,8 @@ public:
         QObject::connect(add_cam, SIGNAL(clicked()), XViewerClass, SLOT(AddCam()));
         QObject::connect(set_cam, SIGNAL(clicked()), XViewerClass, SLOT(SetCam()));
         QObject::connect(del_cam, SIGNAL(clicked()), XViewerClass, SLOT(DelCam()));
+        QObject::connect(preview, SIGNAL(clicked()), XViewerClass, SLOT(Preview()));
+        QObject::connect(playback, SIGNAL(clicked()), XViewerClass, SLOT(Playback()));
 
         QMetaObject::connectSlotsByName(XViewerClass);
     } // setupUi
@@ -191,6 +244,8 @@ public:
         close->setText(QString());
         normal->setText(QString());
         status->setText(QCoreApplication::translate("XViewerClass", "\347\233\221\346\216\247\344\270\255....", nullptr));
+        preview->setText(QCoreApplication::translate("XViewerClass", "\351\242\204\350\247\210", nullptr));
+        playback->setText(QCoreApplication::translate("XViewerClass", "\345\233\236\346\224\276", nullptr));
 
         const bool __sortingEnabled = cam_list->isSortingEnabled();
         cam_list->setSortingEnabled(false);
@@ -201,6 +256,13 @@ public:
         add_cam->setText(QCoreApplication::translate("XViewerClass", "\346\226\260\345\242\236", nullptr));
         set_cam->setText(QCoreApplication::translate("XViewerClass", "\344\277\256\346\224\271", nullptr));
         del_cam->setText(QCoreApplication::translate("XViewerClass", "\345\210\240\351\231\244", nullptr));
+
+        const bool __sortingEnabled1 = time_list->isSortingEnabled();
+        time_list->setSortingEnabled(false);
+        QListWidgetItem *___qlistwidgetitem1 = time_list->item(0);
+        ___qlistwidgetitem1->setText(QCoreApplication::translate("XViewerClass", "10:57:30", nullptr));
+        time_list->setSortingEnabled(__sortingEnabled1);
+
     } // retranslateUi
 
 };

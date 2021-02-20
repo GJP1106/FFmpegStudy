@@ -48,8 +48,9 @@ XViewer::XViewer(QWidget *parent)
 	ui.body->setLayout(hlay);
 	// 边框间距
 	vlay->setContentsMargins(0, 0, 0, 0);
-	hlay->addWidget(ui.left);
-	hlay->addWidget(ui.cams);
+	hlay->addWidget(ui.left);		// 左侧相机列表
+	hlay->addWidget(ui.cams);		// 右侧预览窗口
+	hlay->addWidget(ui.playback_wid);	// 回放窗口
 
 	////////////////////////////////
 	// 初始化右键菜单
@@ -78,6 +79,7 @@ XViewer::XViewer(QWidget *parent)
 
 	// 启动定时器渲染视频
 	startTimer(1);
+	Preview();		//默认预览
 }
 
 // 鼠标拖动窗口事件
@@ -346,4 +348,18 @@ void XViewer::StopRecord()
 		delete rec;
 	}
 	records.clear();
+}
+
+void XViewer::Preview()
+{
+	ui.cams->show();
+	ui.playback_wid->hide();
+	ui.preview->setChecked(true);
+}
+
+void XViewer::Playback()
+{
+	ui.cams->hide();
+	ui.playback_wid->show();
+	ui.playback->setChecked(true);
 }

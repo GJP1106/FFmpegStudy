@@ -78,6 +78,26 @@ background-color:#1e1e1e;
 {
 color: rgb(255, 255, 255);
 	font: 75 10pt &quot;Adobe Devanagari&quot;;
+}
+/* tab菜单按钮切换样式 */
+#preview
+{
+background-color:rgb(50, 50, 50);
+}
+
+#playback
+{
+background-color:rgb(50, 50, 50);
+}
+
+#preview:checked
+{
+background-color:rgb(0, 102, 184);
+}
+
+#playback:checked
+{
+background-color:rgb(0, 102, 184);
 }</string>
   </property>
   <widget class="QWidget" name="head" native="true">
@@ -189,14 +209,58 @@ color: rgb(255, 255, 255);
    <widget class="QLabel" name="status">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>15</y>
+      <x>490</x>
+      <y>10</y>
       <width>191</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>监控中....</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="preview">
+    <property name="geometry">
+     <rect>
+      <x>215</x>
+      <y>20</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>预览</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="playback">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>20</y>
+      <width>90</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>回放</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -295,13 +359,51 @@ color: rgb(255, 255, 255);
    <widget class="QWidget" name="cams" native="true">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>210</x>
       <y>10</y>
-      <width>501</width>
+      <width>502</width>
       <height>351</height>
      </rect>
     </property>
    </widget>
+   <widget class="QWidget" name="playback_wid" native="true">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>10</y>
+      <width>471</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <widget class="QCalendarWidget" name="cal">
+     <property name="geometry">
+      <rect>
+       <x>183</x>
+       <y>10</y>
+       <width>291</width>
+       <height>351</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="time_list">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>10</y>
+       <width>182</width>
+       <height>351</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>10:57:30</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <zorder>cams</zorder>
+   <zorder>left</zorder>
+   <zorder>playback_wid</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -421,6 +523,38 @@ color: rgb(255, 255, 255);
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>preview</sender>
+   <signal>clicked()</signal>
+   <receiver>XViewerClass</receiver>
+   <slot>Preview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>266</x>
+     <y>30</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>-140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>playback</sender>
+   <signal>clicked()</signal>
+   <receiver>XViewerClass</receiver>
+   <slot>Playback()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>398</x>
+     <y>28</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>-131</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>MaxWindow()</slot>
@@ -428,5 +562,7 @@ color: rgb(255, 255, 255);
   <slot>AddCam()</slot>
   <slot>SetCam()</slot>
   <slot>DelCam()</slot>
+  <slot>Preview()</slot>
+  <slot>Playback()</slot>
  </slots>
 </ui>

@@ -10,6 +10,7 @@ class CXAudioPlay : public XAudioPlay
 {
 public:
 	bool Open(XAudioSpec& spec) {
+		this->spec_ = spec;
 		// 退出上一次音频
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 
@@ -28,6 +29,12 @@ public:
 		// 开始播放
 		SDL_PauseAudio(0);
 		return true;
+	}
+	void Close()
+	{
+		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		unique_lock<mutex> lock(mux_);
+		audio_datas_.clear();
 	}
 	void Callback(unsigned char* stream, int len)
 	{
@@ -48,7 +55,7 @@ public:
 			}
 			SDL_MixAudio(stream + mixed_size,
 				buf.data.data() + buf.offset,
-				size, SDL_MIX_MAXVOLUME);
+				size, volume_);
 			need_size -= size;
 			mixed_size += size;
 			buf.offset += size;
@@ -57,6 +64,8 @@ public:
 			}
 		}
 	}
+private:
+
 };
 
 XAudioPlay * XAudioPlay::Instace()

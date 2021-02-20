@@ -60,6 +60,7 @@ int main(int argc, char* argv[])
 	ifstream ifs("test_pcm.pcm", ios::binary);
 	if (!ifs) return -1;
 	unsigned char buf[1024] = { 0 };
+	audio->set_volume(10);
 	for (;;) {
 		ifs.read((char*)buf, sizeof(buf));
 		int len = ifs.gcount();
@@ -67,6 +68,11 @@ int main(int argc, char* argv[])
 		audio->Push(buf, len);
 	}
 	getchar();
+	audio->SetSpeed(0.5);
+	getchar();
+	audio->SetSpeed(2);
+	getchar();
+	audio->Close();
 	return 0;
 }
 

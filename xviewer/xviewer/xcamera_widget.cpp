@@ -104,5 +104,3 @@ void XCameraWidget::Draw()
 	view_->DrawFrame(f);
 	XFreeFrame(&f);
 }
-
-

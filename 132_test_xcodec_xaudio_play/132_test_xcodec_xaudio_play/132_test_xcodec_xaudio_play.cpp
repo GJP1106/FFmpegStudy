@@ -1,11 +1,16 @@
 #include <iostream>
 #include "xaudio_play.h"
-#include "xdemuxtask.h"
-#include "xdecodetask.h"
+//#include "xdemuxtask.h"
+//#include "xdecodetask.h"
+#include "xplayer.h"
 using namespace std;
 int main(int argc, char* argv[])
 {
-
+	XPlayer player;
+	player.Open("400_300_25.mp4", nullptr);
+	player.Start();
+	getchar();
+#if 0
 	// ½â·â×°
 	XDemuxTask demux;
 	if (!demux.Open("v1080.mp4")) {
@@ -47,7 +52,7 @@ int main(int argc, char* argv[])
 	}
 
 	getchar();
-
+#endif
 
 	return 0;
 }

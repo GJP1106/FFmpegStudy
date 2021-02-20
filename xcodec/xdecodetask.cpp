@@ -13,6 +13,7 @@ bool XDecodeTask::Open(AVCodecParameters * para)
 		return false;
 	}
 	unique_lock<mutex> lock(mux_);
+	is_open_ = false;
 	auto c = decode_.Create(para->codec_id, false);
 	if (!c) {
 		LOGERROR("decode_.Create failed!");
@@ -25,6 +26,7 @@ bool XDecodeTask::Open(AVCodecParameters * para)
 		LOGERROR("decode_.Open() failed!");
 		return false;
 	}
+	is_open_ = true;
 	LOGINFO("Open decode success!");
 	return true;
 }

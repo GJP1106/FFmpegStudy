@@ -177,6 +177,7 @@
     <ClInclude Include="xformat.h" />
     <ClInclude Include="xmux.h" />
     <ClInclude Include="xmuxtask.h" />
+    <ClInclude Include="xplayer.h" />
     <ClInclude Include="xsdl.h" />
     <ClInclude Include="xtools.h" />
     <ClInclude Include="xvideo_view.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="xformat.cpp" />
     <ClCompile Include="xmux.cpp" />
     <ClCompile Include="xmuxtask.cpp" />
+    <ClCompile Include="xplayer.cpp" />
     <ClCompile Include="xsdl.cpp" />
     <ClCompile Include="xtools.cpp" />
     <ClCompile Include="xvideo_view.cpp" />

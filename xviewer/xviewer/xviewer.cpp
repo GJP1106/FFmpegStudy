@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include <sstream>
 #include <QDir>
+#include <map>
+#include <vector>
 #include <xcamera_record.h>
 #include "xcamera_widget.h"
 using namespace std;
@@ -25,6 +27,15 @@ using namespace std;
 static XCameraWidget *cam_wids[16] = { 0 };
 //视频录制
 static vector<XCameraRecord*> records;
+
+//存储视频日期时间
+struct XCamVideo
+{
+	QString filePath;
+	QDateTime datetime;
+};
+static map<QDate, vector<XCamVideo> > cam_videos;
+
 XViewer::XViewer(QWidget *parent)
 	: QWidget(parent)
 {
@@ -75,6 +86,8 @@ XViewer::XViewer(QWidget *parent)
 
 	// 刷新左侧相机列表
 	XCameraConfig::Instance()->Load(CAM_CONF_PATH);
+
+	ui.time_list->clear();
 	RefreshCams();
 
 	// 启动定时器渲染视频
@@ -386,7 +399,9 @@ void XViewer::SelectCamera(QModelIndex index)
 	QStringList filters;
 	filters << "*.mp4" << "*.avi";
 	dir.setNameFilters(filters);	//筛选
+	// 清理其他相机的数据
 	ui.cal->ClearDate();
+	cam_videos.clear();
 	// 所有文件列表
 	auto files = dir.entryInfoList();
 	for (auto file : files) {
@@ -398,6 +413,10 @@ void XViewer::SelectCamera(QModelIndex index)
 		qDebug() << dt.date();
 		ui.cal->AddDate(dt.date());
 		qDebug() << file.fileName();
+		XCamVideo video;
+		video.datetime = dt;
+		video.filePath = file.absoluteFilePath();
+		cam_videos[dt.date()].push_back(video);
 	}
 	//重新显示日期
 	ui.cal->showNextMonth();
@@ -407,9 +426,21 @@ void XViewer::SelectCamera(QModelIndex index)
 void XViewer::SelectDate(QDate date)
 {
 	qDebug() << "SelectDate" << date.toString();
+	auto dates = cam_videos[date];
+	ui.time_list->clear();
+	for (auto d : dates) {
+		auto item = new QListWidgetItem(d.datetime.time().toString());
+		// item添加自定义数据， 文件路径
+		item->setData(Qt::UserRole, d.filePath);
+		ui.time_list->addItem(item);
+	}
 }
 
 void XViewer::PlayVideo(QModelIndex index)
 {
 	qDebug() << "PlayVideo" << index.row();
+	auto item = ui.time_list->currentItem();
+	if (!item) return;
+	QString path = item->data(Qt::UserRole).toString();
+	qDebug() << path;
 }

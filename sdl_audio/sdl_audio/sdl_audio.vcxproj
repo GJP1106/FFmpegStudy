@@ -155,6 +155,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="sdl_audio.cpp" />
+    <ClCompile Include="xaudio_play.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xaudio_play.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

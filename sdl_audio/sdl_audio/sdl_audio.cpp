@@ -2,14 +2,15 @@
 //
 
 #include <iostream>
-#include <sdl/SDL.h>
+//#include <sdl/SDL.h>
 #include <fstream>
+#include "xaudio_play.h"
 
 #pragma comment(lib, "SDL2.lib")
 #undef main
 using namespace std;
 
-void AudioCallback(void* userdata, Uint8* stream, int len)
+/*void AudioCallback(void* userdata, Uint8* stream, int len)
 {
 	cout << "AudioCallback" << endl;
 	SDL_memset(stream, 0, len);
@@ -19,10 +20,11 @@ void AudioCallback(void* userdata, Uint8* stream, int len)
 		cout << "end" << endl;
 		SDL_PauseAudio(1);
 	}
-}
+}*/
 
 int main(int argc, char* argv[])
 {
+#if 0
     // 初始化SDL 音频模块
 	SDL_Init(SDL_INIT_AUDIO);
 
@@ -48,6 +50,23 @@ int main(int argc, char* argv[])
 	SDL_PauseAudio(0);
 	getchar();
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+#endif
+
+
+	auto audio = XAudioPlay::Instace();
+	XAudioSpec spec;
+	spec.freq = 44100;
+	audio->Open(spec);
+	ifstream ifs("test_pcm.pcm", ios::binary);
+	if (!ifs) return -1;
+	unsigned char buf[1024] = { 0 };
+	for (;;) {
+		ifs.read((char*)buf, sizeof(buf));
+		int len = ifs.gcount();
+		if (len <= 0) break;
+		audio->Push(buf, len);
+	}
+	getchar();
 	return 0;
 }
 

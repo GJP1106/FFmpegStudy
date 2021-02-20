@@ -269,7 +269,7 @@ background-color:rgb(0, 102, 184);
     <rect>
      <x>0</x>
      <y>50</y>
-     <width>701</width>
+     <width>801</width>
      <height>371</height>
     </rect>
    </property>
@@ -371,15 +371,15 @@ background-color:rgb(0, 102, 184);
      <rect>
       <x>220</x>
       <y>10</y>
-      <width>471</width>
+      <width>581</width>
       <height>351</height>
      </rect>
     </property>
     <widget class="XCalendar" name="cal">
      <property name="geometry">
       <rect>
-       <x>183</x>
-       <y>10</y>
+       <x>180</x>
+       <y>0</y>
        <width>399</width>
        <height>378</height>
       </rect>
@@ -562,6 +562,54 @@ background-color:rgb(0, 102, 184);
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>cam_list</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>XViewerClass</receiver>
+   <slot>SelectCamera(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>269</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>-184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cal</sender>
+   <signal>clicked(QDate)</signal>
+   <receiver>XViewerClass</receiver>
+   <slot>SelectDate(QDate)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>641</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>591</x>
+     <y>-146</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>time_list</sender>
+   <signal>activated(QModelIndex)</signal>
+   <receiver>XViewerClass</receiver>
+   <slot>PlayVideo(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>-229</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>MaxWindow()</slot>
@@ -571,5 +619,8 @@ background-color:rgb(0, 102, 184);
   <slot>DelCam()</slot>
   <slot>Preview()</slot>
   <slot>Playback()</slot>
+  <slot>SelectCamera(QModelIndex)</slot>
+  <slot>SelectDate(QDate)</slot>
+  <slot>PlayVideo(QModelIndex)</slot>
  </slots>
 </ui>

@@ -10,7 +10,7 @@ void XCalendar::paintCell(QPainter * painter, const QRect & rec, const QDate & d
 {
 	// 有视频的日期特殊显示
 	// 测试日期 4号
-	if (date.day() != 4) {
+	if (mdate_.find(date) == mdate_.end()) {	 //没有视频
 		QCalendarWidget::paintCell(painter, rec, date);
 		return;
 	}

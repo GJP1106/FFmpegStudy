@@ -363,3 +363,53 @@ void XViewer::Playback()
 	ui.playback_wid->show();
 	ui.playback->setChecked(true);
 }
+
+void XViewer::SelectCamera(QModelIndex index)
+{
+	qDebug() << "SelectCamera" << index.row();
+
+	auto conf = XCameraConfig::Instance();
+	auto cam = conf->GetCam(index.row());		//获取相机参数
+	if (cam.name[0] == '\0') {
+		return;
+	}
+	// 相机视频存储路径
+	stringstream ss;
+	ss << cam.save_path << "/" << index.row() << "/";
+
+	//遍历此目录
+	QDir dir(C(ss.str().c_str()));
+	if (!dir.exists()) {
+		return;
+	}
+	// 获取目录下文件列表
+	QStringList filters;
+	filters << "*.mp4" << "*.avi";
+	dir.setNameFilters(filters);	//筛选
+	ui.cal->ClearDate();
+	// 所有文件列表
+	auto files = dir.entryInfoList();
+	for (auto file : files) {
+		QString filename = file.fileName();
+		// 去掉cam_和.mp4
+		auto tmp = filename.left(filename.size() - 4);
+		tmp = tmp.right(tmp.length() - 4);
+		auto dt = QDateTime::fromString(tmp, "yyyy_MM_dd_hh_mm_ss");
+		qDebug() << dt.date();
+		ui.cal->AddDate(dt.date());
+		qDebug() << file.fileName();
+	}
+	//重新显示日期
+	ui.cal->showNextMonth();
+	ui.cal->showPreviousMonth();
+}
+
+void XViewer::SelectDate(QDate date)
+{
+	qDebug() << "SelectDate" << date.toString();
+}
+
+void XViewer::PlayVideo(QModelIndex index)
+{
+	qDebug() << "PlayVideo" << index.row();
+}

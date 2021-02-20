@@ -48,6 +48,10 @@ public slots:
 	void Preview();		//预览界面
 	void Playback();	//回放界面
 
+	void SelectCamera(QModelIndex index);	//选择摄像机
+	void SelectDate(QDate date);			//选择日期
+	void PlayVideo(QModelIndex index);		//选择时间播放
+
 private:
 	Ui::XViewerClass ui;
 	QMenu left_menu_;

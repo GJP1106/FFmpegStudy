@@ -182,7 +182,7 @@ public:
         playback->setAutoExclusive(true);
         body = new QWidget(XViewerClass);
         body->setObjectName(QString::fromUtf8("body"));
-        body->setGeometry(QRect(0, 50, 701, 371));
+        body->setGeometry(QRect(0, 50, 801, 371));
         left = new QWidget(body);
         left->setObjectName(QString::fromUtf8("left"));
         left->setGeometry(QRect(10, 10, 200, 600));
@@ -210,10 +210,10 @@ public:
         cams->setGeometry(QRect(210, 10, 502, 351));
         playback_wid = new QWidget(body);
         playback_wid->setObjectName(QString::fromUtf8("playback_wid"));
-        playback_wid->setGeometry(QRect(220, 10, 471, 351));
+        playback_wid->setGeometry(QRect(220, 10, 581, 351));
         cal = new XCalendar(playback_wid);
         cal->setObjectName(QString::fromUtf8("cal"));
-        cal->setGeometry(QRect(183, 10, 399, 378));
+        cal->setGeometry(QRect(180, 0, 399, 378));
         time_list = new QListWidget(playback_wid);
         new QListWidgetItem(time_list);
         time_list->setObjectName(QString::fromUtf8("time_list"));
@@ -232,6 +232,9 @@ public:
         QObject::connect(del_cam, SIGNAL(clicked()), XViewerClass, SLOT(DelCam()));
         QObject::connect(preview, SIGNAL(clicked()), XViewerClass, SLOT(Preview()));
         QObject::connect(playback, SIGNAL(clicked()), XViewerClass, SLOT(Playback()));
+        QObject::connect(cam_list, SIGNAL(clicked(QModelIndex)), XViewerClass, SLOT(SelectCamera(QModelIndex)));
+        QObject::connect(cal, SIGNAL(clicked(QDate)), XViewerClass, SLOT(SelectDate(QDate)));
+        QObject::connect(time_list, SIGNAL(activated(QModelIndex)), XViewerClass, SLOT(PlayVideo(QModelIndex)));
 
         QMetaObject::connectSlotsByName(XViewerClass);
     } // setupUi

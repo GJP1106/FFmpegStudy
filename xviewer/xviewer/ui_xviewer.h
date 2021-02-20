@@ -12,11 +12,11 @@
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QCalendarWidget>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
+#include "xcalendar.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -41,7 +41,7 @@ public:
     QPushButton *del_cam;
     QWidget *cams;
     QWidget *playback_wid;
-    QCalendarWidget *cal;
+    XCalendar *cal;
     QListWidget *time_list;
 
     void setupUi(QWidget *XViewerClass)
@@ -211,13 +211,13 @@ public:
         playback_wid = new QWidget(body);
         playback_wid->setObjectName(QString::fromUtf8("playback_wid"));
         playback_wid->setGeometry(QRect(220, 10, 471, 351));
-        cal = new QCalendarWidget(playback_wid);
+        cal = new XCalendar(playback_wid);
         cal->setObjectName(QString::fromUtf8("cal"));
-        cal->setGeometry(QRect(183, 10, 291, 351));
+        cal->setGeometry(QRect(183, 10, 399, 378));
         time_list = new QListWidget(playback_wid);
         new QListWidgetItem(time_list);
         time_list->setObjectName(QString::fromUtf8("time_list"));
-        time_list->setGeometry(QRect(0, 10, 182, 351));
+        time_list->setGeometry(QRect(0, 10, 182, 378));
         cams->raise();
         left->raise();
         playback_wid->raise();

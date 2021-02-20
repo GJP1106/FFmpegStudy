@@ -92,6 +92,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="xcalendar.cpp" />
     <ClCompile Include="xcamera_record.cpp" />
     <ClCompile Include="xcamera_config.cpp" />
     <ClCompile Include="xcamera_widget.cpp" />
@@ -108,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="xcalendar.h" />
     <ClInclude Include="xcamera_record.h" />
     <ClInclude Include="xcamera_config.h" />
     <QtMoc Include="xcamera_widget.h" />

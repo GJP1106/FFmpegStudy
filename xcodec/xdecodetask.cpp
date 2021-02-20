@@ -33,7 +33,7 @@ bool XDecodeTask::Open(AVCodecParameters * para)
 void XDecodeTask::Do(AVPacket * pkt)
 {
 	cout << "#" << flush;
-	if (!pkt || pkt->stream_index != 0) { //判断是否是视频
+	if (!pkt || pkt->stream_index != stream_index_) { //判断是否是视频
 		return;
 	}
 	pkt_list_.Push(pkt);
@@ -67,6 +67,11 @@ void XDecodeTask::Main()
 				need_view_ = true;
 				cout << "@" << flush;
 			}
+			if (frame_cache) {
+				auto f = av_frame_alloc();
+				av_frame_ref(f, frame_);	//引用计数+1
+				frames_.push_back(f);
+			}
 		}
 		this_thread::sleep_for(1ms);
 	}
@@ -81,6 +86,12 @@ void XDecodeTask::Main()
 AVFrame * XDecodeTask::GetFrame()
 {
 	unique_lock<mutex> lock(mux_);
+	if (frame_cache) {
+		if (frames_.empty()) return nullptr;
+		auto f = frames_.front();
+		frames_.pop_front();
+		return f;
+	}
 	if (!need_view_ || !frame_ || !frame_->buf[0]) return nullptr;
 	auto f = av_frame_alloc();
 	auto re = av_frame_ref(f, frame_);	//引用加1

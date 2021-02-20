@@ -11,6 +11,8 @@ enum XSYN_TYPE
 class XCODEC_API XDemuxTask : public XThread
 {
 public:
+	int audio_index() { return demux_.audio_index(); }
+	int video_index() { return demux_.video_index(); }
 	void Main();
 	bool Open(std::string url, int timeout_ms = 1000);
 	// 复制视频参数

@@ -14,11 +14,19 @@ public:
 	// need_view_控制渲染
 	// 返回结果需要用 XFreeFrame释放
 	AVFrame* GetFrame();
+
+	void set_stream_index(int i) { stream_index_ = i; }
+
+	void set_frame_cache(bool is) { frame_cache = is; }
+
 private:
+	int stream_index_ = 0;
 	std::mutex mux_;
 	XDecode decode_;
 	XAVPacketList pkt_list_;
 	AVFrame *frame_ = nullptr;	//解码后存储
 	bool need_view_ = false;		//是否需要渲染，每帧只渲染一次，通过GetFrame
+	std::list<AVFrame*> frames_;	//存储音频缓冲
+	bool frame_cache = false;		//是否缓冲frame队列
 };
 

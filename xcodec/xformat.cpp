@@ -101,7 +101,7 @@ void XFormat::set_c(AVFormatContext * c)
 		return;
 	}
 	is_connected_ = true;
-	// 几时，用于超时判断
+	// 计时，用于超时判断
 	last_time_ = NowMs();
 
 	// 设定超时回调函数
@@ -147,7 +147,8 @@ bool XFormat::RescaleTime(AVPacket * pkt, long long offset_pts, AVRational * tim
 	pkt->dts = av_rescale_q_rnd(pkt->dts - offset_pts, *time_base,
 		out_stream->time_base, (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
 	pkt->duration = av_rescale_q(pkt->duration, *time_base, out_stream->time_base);
-	return false;
+	pkt->pos = -1;
+	return true;
 }
 
 void XFormat::set_time_out_ms(int ms)

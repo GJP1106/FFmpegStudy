@@ -10,6 +10,23 @@ extern "C"
 void XMuxTask::Main()
 {
 	xmux_.WriteHead();
+	// 找到关键帧
+	while (!is_exit_) {
+		unique_lock<mutex> lock(mux_);
+		auto pkt = pkts_.Pop();
+		if (!pkt) {
+			MSleep(1);
+			continue;
+		}
+		if (pkt->stream_index == xmux_.video_index()
+			&& pkt->flags & AV_PKT_FLAG_KEY) {		//关键帧
+			xmux_.Write(pkt);
+			av_packet_free(&pkt);
+			break;
+		}
+		// 丢掉视频非关键帧
+		av_packet_free(&pkt);
+	}
 	while (!is_exit_) {
 		unique_lock<mutex> lock(mux_);
 		auto pkt = pkts_.Pop();

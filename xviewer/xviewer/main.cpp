@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 #include "xcamera_config.h"
 #include <QDebug>
+#include <QDir>
 #include "xcamera_record.h"
 #define TEST_CAM_PATH "test.db"
 int main(int argc, char *argv[])
@@ -50,14 +51,19 @@ int main(int argc, char *argv[])
 	xc->DelCam(0);
 #endif
 
+	const char* save_path = "./video/0/";
+	QDir dir;
+	dir.mkpath(save_path);
 
 	XCameraRecord xr;
 	xr.set_rtsp_url("400_300_25.mp4");
-	xr.set_save_path("./test.mp4");
+	xr.set_save_path(save_path);
 	xr.Start();
 
 	QApplication a(argc, argv);
 	XViewer w;
 	w.show();
-	return a.exec();
+	auto re = a.exec();
+	xr.Stop();
+	return re;
 }

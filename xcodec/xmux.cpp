@@ -33,9 +33,6 @@ AVFormatContext * XMux::Open(const char * url,
 		auto as = avformat_new_stream(c, NULL);
 		avcodec_parameters_copy(as->codecpar, audio_para);
 	}
-	//vs->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
-	//auto as = avformat_new_stream(c, NULL);		// 音频流
-	//as->codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 
 	// 打开IO
 	re = avio_open(&c->pb, url, AVIO_FLAG_WRITE);
@@ -63,7 +60,7 @@ bool XMux::Write(AVPacket * pkt)
 	if (!pkt) return false;
 	unique_lock<mutex> lock(mux_);
 	if (!c_) return false;
-	cout << "pts:" << pkt->pts << " " << flush;
+	
 	// 没读取到pts，重构考虑通过duration计算
 	if (pkt->pts == AV_NOPTS_VALUE) {
 		pkt->pts = 0;
@@ -85,6 +82,7 @@ bool XMux::Write(AVPacket * pkt)
 		RescaleTime(pkt, begin_audio_pts_, src_audio_time_base_);
 		lock.lock();
 	}
+	cout << pkt->pts << " " << flush;
 	// 写入一帧数据， 内部缓冲排序DTS，通过pkt=null 可以写入缓冲
 	auto re = av_interleaved_write_frame(c_, pkt);
 	BERR(re);
@@ -95,14 +93,16 @@ bool XMux::WriteEnd()
 {
 	unique_lock<mutex> lock(mux_);
 	if (!c_) return false;
-	av_interleaved_write_frame(c_, NULL);  //写入排序缓冲
-	auto re = av_write_trailer(c_);
+	int re = 0;
+	//av_interleaved_write_frame(c_, NULL);  //写入排序缓冲
+	re = av_write_trailer(c_);
 	BERR(re);
 	return true;
 }
 
 void XMux::set_src_video_time_base(AVRational * tb)
 {
+	if (!tb) return;
 	unique_lock<mutex> lock(mux_);
 	if (!src_video_time_base_) {
 		src_video_time_base_ = new AVRational();
@@ -112,6 +112,7 @@ void XMux::set_src_video_time_base(AVRational * tb)
 
 void XMux::set_src_audio_time_base(AVRational * tb)
 {
+	if (!tb) return;
 	unique_lock<mutex> lock(mux_);
 	if (!src_audio_time_base_) {
 		src_audio_time_base_ = new AVRational();
@@ -124,10 +125,10 @@ XMux::~XMux()
 	unique_lock<mutex> lock(mux_);
 	if (src_video_time_base_) {
 		delete src_video_time_base_;
-		src_video_time_base_ = nullptr;
 	}
+	src_video_time_base_ = nullptr;
 	if (src_audio_time_base_) {
 		delete src_audio_time_base_;
-		src_audio_time_base_ = nullptr;
 	}
+	src_audio_time_base_ = nullptr;
 }

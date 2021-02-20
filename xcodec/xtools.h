@@ -68,7 +68,7 @@ protected:
 	// 线程入口函数
 	virtual void Main() = 0;
 	// 标志线程退出
-	bool is_exit_ = true;
+	bool is_exit_ = false;
 	//  线程索引号
 	int index_ = 0;
 private:

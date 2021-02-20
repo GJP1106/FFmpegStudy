@@ -18,6 +18,7 @@
 #include <vector>
 #include <xcamera_record.h>
 #include "xcamera_widget.h"
+#include "xplayvideo.h"
 using namespace std;
 #define CAM_CONF_PATH "test.db"
 //解决中文乱码
@@ -443,4 +444,7 @@ void XViewer::PlayVideo(QModelIndex index)
 	if (!item) return;
 	QString path = item->data(Qt::UserRole).toString();
 	qDebug() << path;
+	static XPlayVideo play;
+	play.Open(path.toLocal8Bit());
+	play.show();
 }

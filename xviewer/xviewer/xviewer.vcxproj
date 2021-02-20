@@ -64,7 +64,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>..\..\xcodec;E:\Qt5.14.2\5.14.2\msvc2017\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\xcodec;E:\Qt5.14.2\5.14.2\msvc2017\include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -96,12 +96,14 @@
     <ClCompile Include="xcamera_record.cpp" />
     <ClCompile Include="xcamera_config.cpp" />
     <ClCompile Include="xcamera_widget.cpp" />
+    <ClCompile Include="xplayvideo.cpp" />
     <ClCompile Include="xviewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="xviewer.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="xplayvideo.ui" />
     <QtUic Include="xviewer.ui" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +114,7 @@
     <ClInclude Include="xcalendar.h" />
     <ClInclude Include="xcamera_record.h" />
     <ClInclude Include="xcamera_config.h" />
+    <QtMoc Include="xplayvideo.h" />
     <QtMoc Include="xcamera_widget.h" />
   </ItemGroup>
   <ItemGroup>

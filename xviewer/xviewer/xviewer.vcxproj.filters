@@ -43,6 +43,9 @@
     <ClCompile Include="xcalendar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xplayvideo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="xviewer.h">
@@ -51,9 +54,15 @@
     <QtMoc Include="xcamera_widget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="xplayvideo.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="xviewer.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="xplayvideo.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

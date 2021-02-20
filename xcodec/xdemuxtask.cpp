@@ -19,6 +19,16 @@ void XDemuxTask::Main()
 			continue;
 		}
 		cout << "." << flush;
+		// 播放速度控制
+		if (syn_type_ == XSYN_VIDEO &&
+			pkt.stream_index == demux_.video_index()) {
+			//pkt.duration
+			auto dur = demux_.RescaleToMs(pkt.duration, pkt.stream_index);
+			if (dur <= 0) {
+				dur = 40;
+			}
+			MSleep(dur);
+		}
 		Next(&pkt);
 		av_packet_unref(&pkt);
 		this_thread::sleep_for(1ms);

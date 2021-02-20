@@ -33,6 +33,7 @@ bool XPlayVideo::Open(const char * url)
 	if (!view_->Init(vp->para)) {		//SDL‰÷»æ
 		return false;
 	}
+	demux_.set_syn_type(XSYN_VIDEO);
 	demux_.Start();
 	decode_.Start();
 

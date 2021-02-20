@@ -31,6 +31,8 @@ public:
 	// 根据timebase换算时间
 	bool RescaleTime(AVPacket *pkt, long long offset_pts, XRational time_base);
 	bool RescaleTime(AVPacket *pkt, long long offset_pts, AVRational* time_base);
+	// 把pts dts duration值转为毫秒
+	long long RescaleToMs(long long pts, int index);
 	int video_codec_id() { return video_codec_id_; }
 	//判断是否超时
 	bool IsTimeout() {

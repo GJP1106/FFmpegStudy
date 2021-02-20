@@ -1,6 +1,13 @@
 #pragma once
 #include "xtools.h"
 #include "xdemux.h"
+
+enum XSYN_TYPE
+{
+	XSYN_NONE = 0,	//不做同步
+	XSYN_VIDEO = 1,	//根据视频同步， 不处理音频
+};
+
 class XCODEC_API XDemuxTask : public XThread
 {
 public:
@@ -15,9 +22,11 @@ public:
 	{
 		return demux_.CopyAudioPara();
 	}
+	void set_syn_type(XSYN_TYPE t) { syn_type_ = t; }
 private:
 	XDemux demux_;
 	std::string url_;
 	int timeout_ms_ = 0;		//超时时间
+	XSYN_TYPE syn_type_ = XSYN_NONE;
 };
 

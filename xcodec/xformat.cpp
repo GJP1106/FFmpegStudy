@@ -150,6 +150,15 @@ bool XFormat::RescaleTime(AVPacket * pkt, long long offset_pts, AVRational * tim
 	pkt->pos = -1;
 	return true;
 }
+// 把pts dts duration值转为毫秒
+long long XFormat::RescaleToMs(long long pts, int index)
+{
+	unique_lock<mutex> lock(mux_);
+	if (!c_ || index < 0 || index > c_->nb_streams) return 0;
+	auto in_timebase = c_->streams[index]->time_base;
+	AVRational out_timebase = { 1, 1000 };	//输出timebase 毫秒
+	return av_rescale_q(pts, in_timebase, out_timebase);
+}
 
 void XFormat::set_time_out_ms(int ms)
 {

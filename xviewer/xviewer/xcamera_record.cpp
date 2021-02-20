@@ -29,7 +29,7 @@ void XCameraRecord::Main()
 		if (demux.Open(rtsp_url_)) {		//最坏情况阻塞1秒
 			break;
 		}
-		MSleep(10);
+		MSleep(3000);
 		continue;
 	}
 	// 音视频参数

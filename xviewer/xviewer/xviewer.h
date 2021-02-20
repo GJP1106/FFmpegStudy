@@ -42,6 +42,9 @@ public slots:
 	void SetCam();		//修改摄像机配置
 	void DelCam();		//删除摄像机
 
+	void StartRecord();	//开始全部摄像头录制
+	void StopRecord();	//停止全部摄像头录制
+
 private:
 	Ui::XViewerClass ui;
 	QMenu left_menu_;

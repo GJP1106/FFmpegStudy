@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
@@ -28,6 +29,7 @@ public:
     QPushButton *max;
     QPushButton *close;
     QPushButton *normal;
+    QLabel *status;
     QWidget *body;
     QWidget *left;
     QListWidget *cam_list;
@@ -100,6 +102,11 @@ public:
 "#cams\n"
 "{\n"
 "background-color:#1e1e1e;\n"
+"}\n"
+"#status\n"
+"{\n"
+"color: rgb(255, 255, 255);\n"
+"	font: 75 10pt \"Adobe Devanagari\";\n"
 "}"));
         head = new QWidget(XViewerClass);
         head->setObjectName(QString::fromUtf8("head"));
@@ -132,6 +139,9 @@ public:
         close->raise();
         normal->raise();
         max->raise();
+        status = new QLabel(head);
+        status->setObjectName(QString::fromUtf8("status"));
+        status->setGeometry(QRect(240, 15, 191, 31));
         body = new QWidget(XViewerClass);
         body->setObjectName(QString::fromUtf8("body"));
         body->setGeometry(QRect(0, 50, 701, 371));
@@ -180,6 +190,7 @@ public:
         max->setText(QString());
         close->setText(QString());
         normal->setText(QString());
+        status->setText(QCoreApplication::translate("XViewerClass", "\347\233\221\346\216\247\344\270\255....", nullptr));
 
         const bool __sortingEnabled = cam_list->isSortingEnabled();
         cam_list->setSortingEnabled(false);

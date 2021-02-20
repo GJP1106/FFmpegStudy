@@ -13,13 +13,18 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <sstream>
+#include <QDir>
+#include <xcamera_record.h>
 #include "xcamera_widget.h"
 using namespace std;
 #define CAM_CONF_PATH "test.db"
 //解决中文乱码
 #define C(s) QString::fromLocal8Bit(s)
 
+// 渲染窗口
 static XCameraWidget *cam_wids[16] = { 0 };
+//视频录制
+static vector<XCameraRecord*> records;
 XViewer::XViewer(QWidget *parent)
 	: QWidget(parent)
 {
@@ -60,6 +65,10 @@ XViewer::XViewer(QWidget *parent)
 	a = m->addAction(C("16窗口"));
 	connect(a, SIGNAL(triggered()), this, SLOT(View16()));
 
+	a = left_menu_.addAction(C("全部开始录制"));
+	connect(a, SIGNAL(triggered()), this, SLOT(StartRecord()));
+	a = left_menu_.addAction(C("全部停止录制"));
+	connect(a, SIGNAL(triggered()), this, SLOT(StopRecord()));
 	// 默认窗口
 	View(9);
 
@@ -302,4 +311,39 @@ void XViewer::DelCam()
 	}
 	XCameraConfig::Instance()->DelCam(row);
 	RefreshCams();
+}
+
+void XViewer::StartRecord()
+{
+	StopRecord();
+	qDebug() << "开始全部摄像头录制";
+	ui.status->setText(C("录制中...."));
+	//获取配置列表
+	auto conf = XCameraConfig::Instance();
+	int count = conf->GetCamCount();
+	for (int i = 0; i < count; i++) {
+		auto cam = conf->GetCam(i);
+		stringstream ss;
+		ss << cam.save_path << "/" << i << "/";
+		QDir dir;
+		dir.mkpath(ss.str().c_str());
+		XCameraRecord *rec = new XCameraRecord();
+		rec->set_rtsp_url(cam.url);
+		rec->set_save_path(ss.str());
+		rec->set_file_sec(5);
+		rec->Start();
+		records.push_back(rec);
+	}
+	//创建录制目录
+	//分别开始录制线程
+}
+
+void XViewer::StopRecord()
+{
+	ui.status->setText(C("监控中...."));
+	for (auto rec : records) {
+		rec->Stop();
+		delete rec;
+	}
+	records.clear();
 }

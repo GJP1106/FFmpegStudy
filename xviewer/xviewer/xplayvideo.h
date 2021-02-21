@@ -15,6 +15,8 @@ public:
 	void timerEvent(QTimerEvent* ev) override;
 	void Close();
 	void closeEvent(QCloseEvent* ev) override;
+public slots:
+	void SetSpeed();
 private:
 	Ui::XPlayVideo ui;
 	XPlayer player;

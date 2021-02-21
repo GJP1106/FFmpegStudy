@@ -86,8 +86,9 @@ public:
 		audio_datas_.back().data.assign(data, data + size);
 	}
 	// ≤•∑≈ÀŸ∂»
-	virtual void SetSpeed(int s)
+	virtual void SetSpeed(float s)
 	{
+		speed_ = s;
 		auto spec = spec_;
 		auto old_freq = spec.freq;
 		spec.freq *= s;
@@ -106,6 +107,7 @@ public:
 	virtual long long cur_pts() = 0;
 protected:
 	double time_base_ = 0;
+	float speed_ = 1.0;
 	XAudioPlay();
 	virtual void Callback(unsigned char* stream, int len) = 0;
 	static void AudioCallback(void *userdata, unsigned char* stream, int len)

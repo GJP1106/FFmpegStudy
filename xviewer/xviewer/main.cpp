@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDir>
 #include "xcamera_record.h"
+#include "xplayvideo.h"
 #define TEST_CAM_PATH "test.db"
 int main(int argc, char *argv[])
 {
@@ -62,10 +63,13 @@ int main(int argc, char *argv[])
 	xr.Start();
 #endif
 	QApplication a(argc, argv);
+	XPlayVideo pv;
+	pv.Open("400_300_25.mp4");
+	pv.exec();
 	XViewer w;
 	w.show();
-	//auto re = a.exec();
+	auto re = a.exec();
 	//xr.Stop();
 
-	return a.exec();
+	return re;
 }

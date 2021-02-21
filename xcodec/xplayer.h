@@ -17,6 +17,8 @@ public:
 	void Start();
 	// 渲染视频 播放音频
 	void Update();
+
+	void SetSpeed(float s);
 protected:
 	XDemuxTask demux_;				//解封装
 	XDecodeTask audio_decode_;		//音频解码

@@ -1,4 +1,5 @@
 #include "xplayvideo.h"
+#include <QDebug>
 
 XPlayVideo::XPlayVideo(QWidget *parent)
 	: QDialog(parent)
@@ -11,10 +12,22 @@ XPlayVideo::~XPlayVideo()
 {
 	Close();
 }
-
+void XPlayVideo::SetSpeed()
+{
+	float speed = 1;
+	int s = ui.speed->value();
+	if (s <= 10) {
+		speed = (float)s / (float)10;
+	}
+	else {
+		speed = s - 9;
+	}
+	ui.speedtxt->setText(QString::number(speed));
+	player.SetSpeed(speed);
+}
 bool XPlayVideo::Open(const char * url)
 {
-	if (!player.Open(url, (void*)winId())) {
+	if (!player.Open(url, (void*)ui.video->winId())) {
 		return false;
 	}
 	player.Start();

@@ -61,6 +61,10 @@ bool XPlayVideo::Open(const char * url)
 void XPlayVideo::timerEvent(QTimerEvent * ev)
 {
 	player.Update();
+	auto pos = player.pos_ms();
+	auto total = player.total_ms();
+	ui.pos->setMaximum(total);
+	ui.pos->setValue(pos);
 	//if (!view_) return;
 	//auto f = decode_.GetFrame();
 	//if (!f) return;

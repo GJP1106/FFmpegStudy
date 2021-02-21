@@ -18,6 +18,7 @@ bool XPlayer::Open(const char * url, void * winid)
 	// ÊÓÆµ½âÂë
 	auto vp = demux_.CopyVideoPara();
 	if (vp) {
+		this->total_ms_ = vp->total_ms;
 		if (!video_decode_.Open(vp->para)) {
 			return false;
 		}
@@ -80,11 +81,15 @@ void XPlayer::Main()
 	auto au = XAudioPlay::Instace();
 	auto ap = demux_.CopyAudioPara();
 	auto vp = demux_.CopyVideoPara();
-	if (!ap) return;
+	
+	video_decode_.set_time_base(vp->time_base);
 	while (!is_exit_) {
-		syn = XRescale(au->cur_pts(), ap->time_base, vp->time_base);
-		audio_decode_.set_syn_pts(au->cur_pts() + 10000);
-		video_decode_.set_syn_pts(syn);
+		this->pos_ms_ = video_decode_.cur_ms();
+		if (ap) {
+			syn = XRescale(au->cur_pts(), ap->time_base, vp->time_base);
+			audio_decode_.set_syn_pts(au->cur_pts() + 10000);
+			video_decode_.set_syn_pts(syn);
+		}
 		MSleep(1);
 	}
 }

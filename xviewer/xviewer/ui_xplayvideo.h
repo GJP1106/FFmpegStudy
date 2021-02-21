@@ -24,6 +24,7 @@ public:
     QLabel *label;
     QSlider *speed;
     QLabel *speedtxt;
+    QSlider *pos;
 
     void setupUi(QWidget *XPlayVideo)
     {
@@ -48,6 +49,13 @@ public:
         speedtxt = new QLabel(XPlayVideo);
         speedtxt->setObjectName(QString::fromUtf8("speedtxt"));
         speedtxt->setGeometry(QRect(230, 10, 31, 16));
+        pos = new QSlider(XPlayVideo);
+        pos->setObjectName(QString::fromUtf8("pos"));
+        pos->setGeometry(QRect(20, 370, 561, 22));
+        pos->setMinimum(1);
+        pos->setMaximum(999);
+        pos->setPageStep(100);
+        pos->setOrientation(Qt::Horizontal);
 
         retranslateUi(XPlayVideo);
         QObject::connect(speed, SIGNAL(sliderReleased()), XPlayVideo, SLOT(SetSpeed()));

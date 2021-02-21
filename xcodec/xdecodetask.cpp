@@ -11,11 +11,26 @@ void XDecodeTask::Stop()
 	unique_lock<mutex> lock(mux_);
 	decode_.set_c(nullptr);
 	is_open_ = false;
+	if (time_base_) {
+		delete time_base_;
+	}
+	time_base_ = nullptr;
 	while (!frames_.empty()) {
 		av_frame_free(&frames_.front());
 		frames_.pop_front();
 	}
 	XThread::Stop();
+}
+void XDecodeTask::set_time_base(AVRational * time_base)
+{
+	if (!time_base) return;
+	unique_lock<mutex> lock(mux_);
+	if (time_base_) {
+		delete time_base_;
+	}
+	time_base_ = new AVRational();
+	time_base_->den = time_base->den;
+	time_base_->num = time_base->num;
 }
 // 打开解码器
 bool XDecodeTask::Open(AVCodecParameters * para)
@@ -99,6 +114,10 @@ void XDecodeTask::Main()
 				need_view_ = true;
 				cout << "@" << flush;
 				cur_pts = frame_->pts;
+				// 转换成毫秒
+				if (time_base_) {
+					cur_ms_ = av_rescale_q(frame_->pts, *time_base_, { 1, 1000 });
+				}
 			}
 			if (frame_cache) {
 				auto f = av_frame_alloc();

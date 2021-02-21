@@ -50,6 +50,8 @@ public:
 		// 2、buf小于stream缓冲 拼接
 		int mixed_size = 0;		//已经处理的字节数
 		int need_size = len;	//需要处理的字节数
+		cur_pts_ = buf.pts;		//当前播放的pts
+		last_ms_ = NowMs();		//计时开始播放
 		while (mixed_size < len) {
 			if (audio_datas_.empty()) break;
 			buf = audio_datas_.front();
@@ -68,8 +70,20 @@ public:
 			}
 		}
 	}
+	long long cur_pts() override
+	{
+		double ms = 0;
+		if (last_ms_ > 0) {
+			ms = NowMs() - last_ms_;	//距离上次写入缓冲的播放时间
+		}
+		// pts 毫秒换算成pts的时间基数
+		if (time_base_ > 0)
+		    ms = ms / (double)1000 / (double)time_base_;
+		return cur_pts_ + ms;
+	}
 private:
-
+	long long cur_pts_ = 0;	//当前播放位置
+	long long last_ms_ = 0;	//上次的时间戳
 };
 
 XAudioPlay * XAudioPlay::Instace()
@@ -108,11 +122,15 @@ void XAudioPlay::Push(AVFrame * frame)
 {
 	if (!frame || !frame->data[0]) return;
 	vector<unsigned char> buf;
-	int sample_size = 4;
+	int sample_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
 	int channels = frame->channels;
 	unsigned char *L = frame->data[0];
 	unsigned char *R = frame->data[1];
 	unsigned char* data = nullptr;
+	if (channels == 1) {
+		Push(frame->data[0], frame->nb_samples * sample_size, frame->pts);
+		return;
+	}
 	// 暂时支持双通道
 	switch (frame->format)
 	{
@@ -129,13 +147,20 @@ void XAudioPlay::Push(AVFrame * frame)
 			memcpy(data + i * sample_size * channels + sample_size,
 				R + i * sample_size, sample_size);
 		}
-		Push(data, frame->linesize[0]);
+		Push(data, frame->linesize[0], frame->pts);
 		return;
 		break;
 	default:
 		break;
 	}
-	Push(frame->data[0], frame->linesize[0]);
+	Push(frame->data[0], frame->linesize[0], frame->pts);
+}
+
+bool XAudioPlay::Open(XPara &para)
+{
+	if (para.time_base->num > 0)
+	    time_base_ = para.time_base->den / para.time_base->num;
+	return Open(para.para);
 }
 
 XAudioPlay::XAudioPlay()

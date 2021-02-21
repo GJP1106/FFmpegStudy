@@ -5,6 +5,18 @@ extern "C"
 {
 #include <libavcodec/avcodec.h>
 }
+void XDecodeTask::Stop()
+{
+	pkt_list_.Clear();
+	unique_lock<mutex> lock(mux_);
+	decode_.set_c(nullptr);
+	is_open_ = false;
+	while (!frames_.empty()) {
+		av_frame_free(&frames_.front());
+		frames_.pop_front();
+	}
+	XThread::Stop();
+}
 // 打开解码器
 bool XDecodeTask::Open(AVCodecParameters * para)
 {
@@ -39,6 +51,14 @@ void XDecodeTask::Do(AVPacket * pkt)
 		return;
 	}
 	pkt_list_.Push(pkt);
+	if (block_size_ <= 0) return;
+	while (!is_exit_) {
+		if (pkt_list_.Size() > block_size_) {
+			MSleep(1);
+			continue;
+		}
+		break;
+	}
 }
 
 // 线程主函数
@@ -50,7 +70,17 @@ void XDecodeTask::Main()
 		    frame_ = av_frame_alloc();
 	    }
 	}
+	long long cur_pts = -1;		//当前解码到的pts(以解码数据为准)
 	while (!is_exit_) {
+
+		// 同步
+		while (!is_exit_) {
+			if (syn_pts_ >= 0 && cur_pts > syn_pts_) {
+				MSleep(1);
+				continue;
+			}
+			break;
+		}
 		auto pkt = pkt_list_.Pop();
 		if (!pkt) {
 			this_thread::sleep_for(1ms);
@@ -68,6 +98,7 @@ void XDecodeTask::Main()
 			if (decode_.Recv(frame_)) {
 				need_view_ = true;
 				cout << "@" << flush;
+				cur_pts = frame_->pts;
 			}
 			if (frame_cache) {
 				auto f = av_frame_alloc();
@@ -106,3 +137,5 @@ AVFrame * XDecodeTask::GetFrame()
 
 	return f;
 }
+
+

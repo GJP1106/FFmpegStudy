@@ -1,12 +1,10 @@
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_xplayvideo.h"
-#include "xdemuxtask.h"
-#include "xdecodetask.h"
-#include "xvideo_view.h"
+#include "xplayer.h"
 
-class XPlayVideo : public QWidget
+class XPlayVideo : public QDialog
 {
 	Q_OBJECT
 
@@ -19,7 +17,5 @@ public:
 	void closeEvent(QCloseEvent* ev) override;
 private:
 	Ui::XPlayVideo ui;
-	XDemuxTask demux_;
-	XDecodeTask decode_;
-	XVideoView* view_ = nullptr;
+	XPlayer player;
 };

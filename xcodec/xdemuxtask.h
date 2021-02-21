@@ -24,6 +24,7 @@ public:
 	{
 		return demux_.CopyAudioPara();
 	}
+	void Stop();
 	void set_syn_type(XSYN_TYPE t) { syn_type_ = t; }
 private:
 	XDemux demux_;

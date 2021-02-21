@@ -64,6 +64,7 @@ struct XData
 {
 	std::vector<unsigned char> data;
 	int offset = 0;		//偏移位置
+	long long pts = 0;	//
 };
 
 // 音频播放 单件模式
@@ -75,11 +76,13 @@ public:
 	virtual void Push(AVFrame* frame);
 	// 打开音频 开始播放 调用回调函数
 	virtual bool Open(XAudioSpec& spec) = 0;
+	virtual bool Open(XPara &para);
 
-	void Push(const unsigned char* data, int size)
+	void Push(const unsigned char* data, int size, long long pts)
 	{
 		std::unique_lock<std::mutex> lock(mux_);
 		audio_datas_.push_back(XData());
+		audio_datas_.back().pts = pts;
 		audio_datas_.back().data.assign(data, data + size);
 	}
 	// 播放速度
@@ -94,9 +97,15 @@ public:
 	}
 	//音量
 	void set_volume(int v) { volume_ = v; }
+	
+	// 时间基数，用于生产播放进度
+	void set_time_base(double b) { time_base_ = b; }
 
 	virtual void Close() = 0;
+	// 获取当前的播放位置
+	virtual long long cur_pts() = 0;
 protected:
+	double time_base_ = 0;
 	XAudioPlay();
 	virtual void Callback(unsigned char* stream, int len) = 0;
 	static void AudioCallback(void *userdata, unsigned char* stream, int len)

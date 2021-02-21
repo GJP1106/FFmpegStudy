@@ -48,3 +48,9 @@ bool XDemuxTask::Open(std::string url, int timeout_ms)
 	LOGDEBUG("XDemuxTask::Open() end!");
 	return true;
 }
+
+void XDemuxTask::Stop()
+{
+	XThread::Stop();
+	demux_.set_c(nullptr);
+}

@@ -42,6 +42,10 @@ XCODEC_API long long NowMs();
 
 XCODEC_API void XFreeFrame(AVFrame** frame);
 
+//根据时间基数计算
+XCODEC_API long long XRescale(long long pts,
+	AVRational* src_time_base,
+	AVRational* des_time_base);
 class XCODEC_API XThread {
 public:
 	// 启动线程
@@ -49,6 +53,9 @@ public:
 
 	// 停止线程(设置退出标志，等待线程退出)
 	virtual void Stop();
+
+	//等待线程退出
+	virtual void Wait();
 
 	// 执行任务 需要重载
 	virtual void Do(AVPacket* pkt) {}
@@ -100,9 +107,12 @@ class XCODEC_API XAVPacketList
 public:
 	AVPacket* Pop();
 	void Push(AVPacket* pkt);
+	int Size();
+	void Clear();
 private:
 	std::list<AVPacket *> pkts_;
-	int max_packets_ = 100; //最大列表数量， 超出清理
+	//int block_size_ = 100;		//阻塞大小
+	int max_packets_ = 1000; //最大列表数量， 超出清理
 	std::mutex mux_;
 };
 

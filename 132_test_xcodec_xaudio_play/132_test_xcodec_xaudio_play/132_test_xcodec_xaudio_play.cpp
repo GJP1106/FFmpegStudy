@@ -9,6 +9,10 @@ int main(int argc, char* argv[])
 	XPlayer player;
 	player.Open("400_300_25.mp4", nullptr);
 	player.Start();
+	for (;;) {
+		player.Update();
+		MSleep(10);
+	}
 	getchar();
 #if 0
 	// ½â·â×°

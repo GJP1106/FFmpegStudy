@@ -31,6 +31,13 @@ void XFreeFrame(AVFrame ** frame)
 	av_frame_free(frame);
 }
 
+long long XRescale(long long pts,
+	AVRational* src_time_base,
+	AVRational* des_time_base)
+{
+	return av_rescale_q(pts, *src_time_base, *des_time_base);
+}
+
 // 启动线程
 void XThread::Start()
 {
@@ -52,13 +59,17 @@ void XThread::Stop()
 	ss << "XThread::Stop() begin" << index_;
 	LOGINFO(ss.str());
 	is_exit_ = true;
+}
+
+void XThread::Wait()
+{
+	stringstream ss;
 	if (th_.joinable()) {		// 判断线程是否可以等待
 		th_.join();				// 等待子线程退出
 	}
 	ss.str("");
 	ss << "XThread::Stop() end" << index_;
 	LOGINFO(ss.str());
-
 }
 
 XPara * XPara::Create()
@@ -116,5 +127,20 @@ void XAVPacketList::Push(AVPacket * pkt)
 			av_packet_free(&pkts_.front()); //清理
 			pkts_.pop_front();	//出队
 		}
+	}
+}
+
+int XAVPacketList::Size()
+{
+	unique_lock<mutex> lock(mux_);
+	return pkts_.size();
+}
+
+void XAVPacketList::Clear()
+{
+	unique_lock<mutex> lock(mux_);
+	while (!pkts_.empty()) {
+		av_packet_free(&pkts_.front());
+		pkts_.pop_front();
 	}
 }

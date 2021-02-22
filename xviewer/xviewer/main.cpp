@@ -63,9 +63,9 @@ int main(int argc, char *argv[])
 	xr.Start();
 #endif
 	QApplication a(argc, argv);
-	XPlayVideo pv;
+	/*XPlayVideo pv;
 	pv.Open("400_300_25.mp4");
-	pv.exec();
+	pv.exec();*/
 	XViewer w;
 	w.show();
 	auto re = a.exec();

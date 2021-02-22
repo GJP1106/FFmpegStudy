@@ -24,6 +24,13 @@ public:
 	long long total_ms() { return total_ms_; }
 	//当前播放的位置
 	long long pos_ms() { return pos_ms_; }
+
+	//设置视频播放位置， 毫秒
+	bool Seek(long long ms);
+
+	// 暂停或者播放
+	void Pause(bool is_pause) override;
+	//bool is_pause() { return is_pause_; }
 protected:
 	long long total_ms_ = 0;
 	long long pos_ms_ = 0;

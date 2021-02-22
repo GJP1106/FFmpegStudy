@@ -51,6 +51,8 @@ public:
 	// 启动线程
 	virtual void Start();
 
+	//设置线程退出标志
+	virtual void Exit();
 	// 停止线程(设置退出标志，等待线程退出)
 	virtual void Stop();
 
@@ -71,7 +73,11 @@ public:
 		std::unique_lock<std::mutex> lock(m_);
 		next_ = xt;
 	}
+	// 暂停或者播放
+	virtual void Pause(bool is_pause) { is_pause_ = is_pause; }
+	bool is_pause() { return is_pause_; }
 protected:
+	bool is_pause_ = false;
 	// 线程入口函数
 	virtual void Main() = 0;
 	// 标志线程退出

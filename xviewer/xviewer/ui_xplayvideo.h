@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QWidget>
 
@@ -25,6 +26,7 @@ public:
     QSlider *speed;
     QLabel *speedtxt;
     QSlider *pos;
+    QPushButton *play;
 
     void setupUi(QWidget *XPlayVideo)
     {
@@ -51,14 +53,22 @@ public:
         speedtxt->setGeometry(QRect(230, 10, 31, 16));
         pos = new QSlider(XPlayVideo);
         pos->setObjectName(QString::fromUtf8("pos"));
-        pos->setGeometry(QRect(20, 370, 561, 22));
+        pos->setGeometry(QRect(80, 370, 501, 22));
         pos->setMinimum(1);
         pos->setMaximum(999);
         pos->setPageStep(100);
         pos->setOrientation(Qt::Horizontal);
+        play = new QPushButton(XPlayVideo);
+        play->setObjectName(QString::fromUtf8("play"));
+        play->setGeometry(QRect(10, 330, 64, 64));
+        play->setStyleSheet(QString::fromUtf8("background-image: url(:/XViewer/img/play.png);\n"
+"background-image: url(:/XViewer/img/pause.png);"));
 
         retranslateUi(XPlayVideo);
         QObject::connect(speed, SIGNAL(sliderReleased()), XPlayVideo, SLOT(SetSpeed()));
+        QObject::connect(pos, SIGNAL(sliderReleased()), XPlayVideo, SLOT(PlayPos()));
+        QObject::connect(play, SIGNAL(clicked()), XPlayVideo, SLOT(Pause()));
+        QObject::connect(pos, SIGNAL(sliderMoved(int)), XPlayVideo, SLOT(Move()));
 
         QMetaObject::connectSlotsByName(XPlayVideo);
     } // setupUi
@@ -68,6 +78,7 @@ public:
         XPlayVideo->setWindowTitle(QCoreApplication::translate("XPlayVideo", "XPlayVideo", nullptr));
         label->setText(QCoreApplication::translate("XPlayVideo", "\346\222\255\346\224\276\351\200\237\345\272\246:", nullptr));
         speedtxt->setText(QCoreApplication::translate("XPlayVideo", "1", nullptr));
+        play->setText(QString());
     } // retranslateUi
 
 };

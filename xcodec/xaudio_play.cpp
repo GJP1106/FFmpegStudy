@@ -13,6 +13,21 @@ using namespace std;
 class CXAudioPlay : public XAudioPlay
 {
 public:
+
+	//暂停
+	void Pause(bool is_pause)
+	{
+		if (is_pause) {
+			SDL_PauseAudio(1);
+			pause_begin = NowMs();
+		}
+		else {
+			//去掉暂停的时间
+			if (pause_begin > 0)
+			    last_ms_ += (NowMs() - pause_begin);
+			SDL_PauseAudio(0);
+		}
+	}
 	bool Open(XAudioSpec& spec) {
 		this->spec_ = spec;
 		// 退出上一次音频
@@ -39,6 +54,9 @@ public:
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		unique_lock<mutex> lock(mux_);
 		audio_datas_.clear();
+		cur_pts_ = 0;
+		last_ms_ = 0;
+		pause_begin = 0;
 	}
 	void Callback(unsigned char* stream, int len)
 	{
@@ -84,6 +102,7 @@ public:
 private:
 	long long cur_pts_ = 0;	//当前播放位置
 	long long last_ms_ = 0;	//上次的时间戳
+	long long pause_begin = 0;	//暂停开始时间
 };
 
 XAudioPlay * XAudioPlay::Instace()
@@ -91,6 +110,7 @@ XAudioPlay * XAudioPlay::Instace()
 	static CXAudioPlay cx;
 	return &cx;
 }
+
 
 bool XAudioPlay::Open(AVCodecParameters * para)
 {

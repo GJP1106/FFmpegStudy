@@ -31,6 +31,8 @@ bool XPlayVideo::Open(const char * url)
 		return false;
 	}
 	player.Start();
+	player.Pause(false);		//播放状态
+	//ui.play->setStyleSheet("background-image: url(:/XViewer/img/pause.png);");
 	startTimer(10);
 	//// 关闭上次数据
 	//Close();
@@ -60,11 +62,19 @@ bool XPlayVideo::Open(const char * url)
 
 void XPlayVideo::timerEvent(QTimerEvent * ev)
 {
+	if (player.is_pause()) {
+		ui.play->setStyleSheet("background-image: url(:/XViewer/img/play.png);");
+	}
+	else {
+		ui.play->setStyleSheet("background-image: url(:/XViewer/img/pause.png);");
+	}
+	if (player.is_pause()) return;
 	player.Update();
 	auto pos = player.pos_ms();
 	auto total = player.total_ms();
 	ui.pos->setMaximum(total);
 	ui.pos->setValue(pos);
+
 	//if (!view_) return;
 	//auto f = decode_.GetFrame();
 	//if (!f) return;
@@ -88,4 +98,20 @@ void XPlayVideo::Close()
 void XPlayVideo::closeEvent(QCloseEvent * ev)
 {
 	Close();
+}
+
+void XPlayVideo::PlayPos()
+{
+	player.Seek(ui.pos->value());
+	player.Pause(false);
+}
+
+void XPlayVideo::Move()
+{
+	player.Pause(true);
+}
+
+void XPlayVideo::Pause()
+{
+	player.Pause(!player.is_pause());
 }

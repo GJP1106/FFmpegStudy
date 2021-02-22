@@ -80,9 +80,9 @@
   <widget class="QSlider" name="pos">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>80</x>
      <y>370</y>
-     <width>561</width>
+     <width>501</width>
      <height>22</height>
     </rect>
    </property>
@@ -99,9 +99,28 @@
     <enum>Qt::Horizontal</enum>
    </property>
   </widget>
+  <widget class="QPushButton" name="play">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>330</y>
+     <width>64</width>
+     <height>64</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-image: url(:/XViewer/img/play.png);
+background-image: url(:/XViewer/img/pause.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="xviewer.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>speed</sender>
@@ -119,8 +138,59 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pos</sender>
+   <signal>sliderReleased()</signal>
+   <receiver>XPlayVideo</receiver>
+   <slot>PlayPos()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>168</x>
+     <y>373</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>196</x>
+     <y>-213</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>play</sender>
+   <signal>clicked()</signal>
+   <receiver>XPlayVideo</receiver>
+   <slot>Pause()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>48</x>
+     <y>355</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>74</x>
+     <y>-232</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pos</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>XPlayVideo</receiver>
+   <slot>Move()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>274</x>
+     <y>372</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>-122</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>SetSpeed()</slot>
+  <slot>PlayPos()</slot>
+  <slot>Pause()</slot>
+  <slot>Move()</slot>
  </slots>
 </ui>

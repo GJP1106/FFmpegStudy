@@ -116,3 +116,10 @@ AVFrame * XCodec::CreateFrame()
 	}
 	return frame;
 }
+
+void XCodec::Clear()
+{
+	unique_lock<mutex> lock(mux_);
+	if (!c_) return;
+	avcodec_flush_buffers(c_);
+}

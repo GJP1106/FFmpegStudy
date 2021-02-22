@@ -59,10 +59,10 @@ bool XPlayer::Open(const char * url, void * winid)
 
 void XPlayer::Stop()
 {
-	XThread::Stop();
-	demux_.Stop();
-	audio_decode_.Stop();
-	video_decode_.Stop();
+	Exit();
+	demux_.Exit();
+	audio_decode_.Exit();
+	video_decode_.Exit();
 	Wait();
 	demux_.Wait();
 	audio_decode_.Wait();
@@ -84,6 +84,10 @@ void XPlayer::Main()
 	
 	video_decode_.set_time_base(vp->time_base);
 	while (!is_exit_) {
+		if (is_pause()) {
+			MSleep(1);
+			continue;
+		}
 		this->pos_ms_ = video_decode_.cur_ms();
 		if (ap) {
 			syn = XRescale(au->cur_pts(), ap->time_base, vp->time_base);
@@ -126,4 +130,24 @@ void XPlayer::Update()
 void XPlayer::SetSpeed(float s)
 {
 	XAudioPlay::Instace()->SetSpeed(s);
+}
+
+// ÉèÖÃÊÓÆµ²¥·ÅÎ»ÖÃ£¬ºÁÃë
+bool XPlayer::Seek(long long ms)
+{
+	demux_.Seek(ms);
+	audio_decode_.Clear();
+	video_decode_.Clear();
+	XAudioPlay::Instace()->Clear();
+	return true;
+}
+
+// ÔİÍ£»òÕß²¥·Å
+void XPlayer::Pause(bool is_pause)
+{
+	XThread::Pause(is_pause);
+	demux_.Pause(is_pause);
+	audio_decode_.Pause(is_pause);
+	video_decode_.Pause(is_pause);
+	XAudioPlay::Instace()->Pause(is_pause);
 }
